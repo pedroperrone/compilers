@@ -1,9 +1,6 @@
 all: main.o lex.yy.o
 	gcc -o compiler lex.yy.o main.o -lfl
 
-mac: main.o lex.yy.o
-	gcc -o compiler lex.yy.o main.o -ll
-
 main.o: main.c
 	gcc -c main.c main.c -Wall
 
