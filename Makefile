@@ -1,8 +1,5 @@
 all: main.o lex.yy.o
-	gcc -o etapa1 lex.yy.o main.o -lfl
-
-mac: main.o lex.yy.o
-	gcc -o etapa1 lex.yy.o main.o -ll
+	gcc -o compiler lex.yy.o main.o -lfl
 
 main.o: main.c
 	gcc -c main.c main.c -Wall
@@ -14,4 +11,4 @@ lex.yy.c: scanner.l
 	flex scanner.l
 
 clean:
-	rm etapa1 lex.yy.* main.o
+	rm compiler lex.yy.* main.o
