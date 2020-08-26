@@ -1,0 +1,5 @@
+,;:()[]{}+-|?@*/<>=!&%#^.$~`
+int float bool char string if then else while do input output return const static foreach for switch case break continue class private public protected end default
+<= >= == != && || >> << %>% %|%
+_ a A j J
+_aA12 a_1 A12___a12xas1_ ___

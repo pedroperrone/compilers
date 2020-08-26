@@ -10,4 +10,4 @@ WORKDIR /app
 COPY . /app
 RUN make all
 
-ENTRYPOINT [ "./compiler" ]
+ENTRYPOINT [ "./etapa1" ]
