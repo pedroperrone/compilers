@@ -3,3 +3,16 @@ int float bool char string if then else while do input output return const stati
 <= >= == != && || >> << %>% %|%
 _ a A j J
 _aA12 a_1 A12___a12xas1_ ___
+123 +321 -4321
+0.312 21.1 32e+123 4E-492
+true false
+'a' ' ' '.' '+'
+"" " " "some text" "escaped \" quote"
+// Comment
+int 32;
+while true /* Comment
+
+and multi
+line*/
+"Should be line 17"
+ß

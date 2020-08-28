@@ -1,21 +1,46 @@
 %{
 #include "tokens.h"
 #include <stdio.h>
-// TODO: ignore inline comments
-// TODO: ignore multiline comments
-// TODO: raise lexical errors
-// TODO: literals
-// TODO: ignore blank chars
+// TODO: 1nv4l1d returns int and indentifier. Should be error.
 
 // QUESTIONS: is ">>" TK_OC_SL and "<<" TK_OC_SR?
 //    Is ____ a valid identifier?
+//    Does SCIENTIFIC_NOTATION require a signal after e?
+//    Can CHAR be anything?
+//    Can a string have anything?
+//    Can string scape quote or break line?
+//    Which characters should be considered blank?
+//    Should we return lexical errors for any string that matches no tokens?
 %}
+%option yylineno
 
 SPECIAL_CHAR [,;:()\[\]{}+-|?@*/<>=!&%#^.$~`]
 
 LETTER_OR_UNDERSCORE [a-zA-Z_]
 NUMBER [0-9]
 IDENTIFIER {LETTER_OR_UNDERSCORE}({LETTER_OR_UNDERSCORE}|{NUMBER})*
+
+SIGNAL [+-]
+INTEGER {SIGNAL}?{NUMBER}+
+
+SCIENTIFIC_NOTATION [eE]{INTEGER}
+FLOATING_POINT_NOTATION \.{NUMBER}+
+FLOAT {INTEGER}({SCIENTIFIC_NOTATION}|{FLOATING_POINT_NOTATION})
+
+CHAR '.'
+
+ANY_SCAPED_CHAR \\.
+NON_QUOTE_OR_NEW_LINE_CHAR [^"]
+STRING \"({ANY_SCAPED_CHAR}|{NON_QUOTE_OR_NEW_LINE_CHAR})*\"
+
+WHITE_SPACES [\n \t]
+
+INLINE_COMMENT "//".*
+
+BEGIN_MULTILINE_COMMENT "/*"
+END_MULTILINE_COMMENT "*/"
+
+%x MULTILINE_COMMENT
 
 %%
 
@@ -47,6 +72,9 @@ IDENTIFIER {LETTER_OR_UNDERSCORE}({LETTER_OR_UNDERSCORE}|{NUMBER})*
 "end" { return TK_PR_END; }
 "default" { return TK_PR_DEFAULT; }
 
+"false" { return TK_LIT_FALSE; }
+"true" { return TK_LIT_TRUE; }
+
 "<=" { return TK_OC_LE; }
 ">=" { return TK_OC_GE; }
 "==" { return TK_OC_EQ; }
@@ -60,11 +88,27 @@ IDENTIFIER {LETTER_OR_UNDERSCORE}({LETTER_OR_UNDERSCORE}|{NUMBER})*
 
 {IDENTIFIER} { return TK_IDENTIFICADOR; }
 
+{CHAR} { return TK_LIT_CHAR; }
+
+{STRING} { return TK_LIT_STRING; }
+
+{INTEGER} { return TK_LIT_INT; }
+
+{FLOAT} { return TK_LIT_FLOAT; }
+
 {SPECIAL_CHAR} { return (int) yytext[0]; }
+
+({WHITE_SPACES}|{INLINE_COMMENT}) { }
+
+{BEGIN_MULTILINE_COMMENT} { BEGIN(MULTILINE_COMMENT); }
+<MULTILINE_COMMENT>{END_MULTILINE_COMMENT} { BEGIN(INITIAL); }
+<MULTILINE_COMMENT>{WHITE_SPACES} { }
+<MULTILINE_COMMENT>. { }
+
+. { return TOKEN_ERRO; }
 
 %%
 
-// TODO: correct implementation of the function
 int get_line_number(void) {
-  return 0;
+  return yylineno;
 }
