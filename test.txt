@@ -1,18 +1,46 @@
-,;:()[]{}+-|?@*/<>=!&%#^.$~`
+// Special characters
+,;:()[]{}+-|?@*/=<>!&%#^.$~`
+
+// Reserved words
 int float bool char string if then else while do input output return const static foreach for switch case break continue class private public protected end default
-<= >= == != && || >> << %>% %|%
+
+// Composite operators
+<= >= == != && || >> <<
+
+// Identifiers
 _ a A j J
 _aA12 a_1 A12___a12xas1_ ___
+
+// Integers
 123 +321 -4321
-0.312 21.1 32e+123 4E-492
+
+// Floats
+0.312 21.01 32.4e+123 4.0E-492
+
+// Booleans
 true false
+
+// Chars
 'a' ' ' '.' '+'
+
+// Strings
 "" " " "some text" "escaped \" quote"
-// Comment
-int 32;
-while true /* Comment
+
+// Multiline comment
+while true 1/* Comment
 
 and multi
 line*/
-"Should be line 17"
-ß
+
+// Line number
+"Should be line 36"
+
+// Error
+1+1
+4e-5
+2E2
+1nv4l1d
+12"string"
+4e
+"string"true
+4.3e-12p

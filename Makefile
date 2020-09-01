@@ -11,4 +11,4 @@ lex.yy.c: scanner.l
 	flex scanner.l
 
 clean:
-	rm etapa1 lex.yy.* main.o
+	rm -f etapa1 lex.yy.* main.o

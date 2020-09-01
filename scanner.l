@@ -1,16 +1,6 @@
 %{
 #include "tokens.h"
 #include <stdio.h>
-// TODO: 1nv4l1d returns int and indentifier. Should be error.
-
-// QUESTIONS: is ">>" TK_OC_SL and "<<" TK_OC_SR?
-//    Is ____ a valid identifier?
-//    Does SCIENTIFIC_NOTATION require a signal after e?
-//    Can CHAR be anything?
-//    Can a string have anything?
-//    Can string scape quote or break line?
-//    Which characters should be considered blank?
-//    Should we return lexical errors for any string that matches no tokens?
 %}
 %option yylineno
 
@@ -24,14 +14,17 @@ SIGNAL [+-]
 INTEGER {SIGNAL}?{NUMBER}+
 
 SCIENTIFIC_NOTATION [eE]{INTEGER}
-FLOATING_POINT_NOTATION \.{NUMBER}+
-FLOAT {INTEGER}({SCIENTIFIC_NOTATION}|{FLOATING_POINT_NOTATION})
+FLOATING_POINT_NOTATION {INTEGER}\.{NUMBER}+
+FLOAT {FLOATING_POINT_NOTATION}{SCIENTIFIC_NOTATION}?
 
 CHAR '.'
 
 ANY_SCAPED_CHAR \\.
-NON_QUOTE_OR_NEW_LINE_CHAR [^"]
+NON_QUOTE_OR_NEW_LINE_CHAR [^"\n]
 STRING \"({ANY_SCAPED_CHAR}|{NON_QUOTE_OR_NEW_LINE_CHAR})*\"
+
+NON_SUBSEQUENT_TOKEN {IDENTIFIER}|{INTEGER}|{FLOAT}|{CHAR}|{STRING}
+SUBSEQUENT_TOKEN {NON_SUBSEQUENT_TOKEN}{2,}
 
 WHITE_SPACES [\n \t]
 
@@ -81,10 +74,8 @@ END_MULTILINE_COMMENT "*/"
 "!=" { return TK_OC_NE; }
 "&&" { return TK_OC_AND; }
 "||" { return TK_OC_OR; }
-">>" { return TK_OC_SL; }
-"<<" { return TK_OC_SR; }
-"%>%" { return TK_OC_FORWARD_PIPE; }
-"%|%" { return TK_OC_BASH_PIPE; }
+"<<" { return TK_OC_SL; }
+">>" { return TK_OC_SR; }
 
 {IDENTIFIER} { return TK_IDENTIFICADOR; }
 
@@ -95,6 +86,8 @@ END_MULTILINE_COMMENT "*/"
 {INTEGER} { return TK_LIT_INT; }
 
 {FLOAT} { return TK_LIT_FLOAT; }
+
+{SUBSEQUENT_TOKEN} { return TOKEN_ERRO; }
 
 {SPECIAL_CHAR} { return (int) yytext[0]; }
 
