@@ -1,10 +1,9 @@
 %{
 #include "tokens.h"
-#include <stdio.h>
 %}
 %option yylineno
 
-SPECIAL_CHAR [,;:()\[\]{}+-|?@*/<>=!&%#^.$~`]
+SPECIAL_CHAR [,;:()\[\]{}+-|*/<>=!&%#^.$]
 
 LETTER_OR_UNDERSCORE [a-zA-Z_]
 NUMBER [0-9]
@@ -23,8 +22,7 @@ ANY_SCAPED_CHAR \\.
 NON_QUOTE_OR_NEW_LINE_CHAR [^"\n]
 STRING \"({ANY_SCAPED_CHAR}|{NON_QUOTE_OR_NEW_LINE_CHAR})*\"
 
-NON_SUBSEQUENT_TOKEN {IDENTIFIER}|{INTEGER}|{FLOAT}|{CHAR}|{STRING}
-SUBSEQUENT_TOKEN {NON_SUBSEQUENT_TOKEN}{2,}
+INVALID_SUBSEQUENT_TOKENS ({INTEGER}|{FLOAT}){IDENTIFIER}
 
 WHITE_SPACES [\n \t]
 
@@ -87,7 +85,7 @@ END_MULTILINE_COMMENT "*/"
 
 {FLOAT} { return TK_LIT_FLOAT; }
 
-{SUBSEQUENT_TOKEN} { return TOKEN_ERRO; }
+{INVALID_SUBSEQUENT_TOKENS} { return TOKEN_ERRO; }
 
 {SPECIAL_CHAR} { return (int) yytext[0]; }
 
