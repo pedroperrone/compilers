@@ -1,0 +1,5 @@
+int id;
+char id1, id2, id3;
+string var;
+float some_float;
+bool my_bool, my_other_bool;

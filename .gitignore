@@ -1,4 +1,7 @@
-etapa1
+etapa2
 lex.yy.c
 lex.yy.o
 main.o
+parser.tab.h
+parser.tab.c
+parser.tab.o
