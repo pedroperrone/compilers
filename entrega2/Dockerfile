@@ -10,7 +10,7 @@ RUN apt-get -y update && \
 
 WORKDIR /app
 COPY . /app
-RUN chmod +x test_and_run.sh
+RUN chmod +x test.sh
 RUN make clean all
 
-ENTRYPOINT [ "./test_and_run.sh" ]
+ENTRYPOINT [ "./test.sh" ]
