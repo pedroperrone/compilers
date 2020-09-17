@@ -63,11 +63,10 @@ start: global_variable start |
        function start |
        %empty
 
-/* TODO: multiple variables without coma are accepted. Missing semicolon is error in next line. */
+/* TODO: allow vector types */
 global_variable: optional_static type identifiers_list ';'
 
-optional_static: TK_PR_STATIC |
-                 %empty
+optional_static: TK_PR_STATIC | %empty
 
 type: TK_PR_INT |
       TK_PR_FLOAT |
@@ -79,8 +78,46 @@ identifiers_list: TK_IDENTIFICADOR identifiers_list_tail
 
 identifiers_list_tail: ',' TK_IDENTIFICADOR identifiers_list_tail | %empty
 
-/* TODO: implement function */
-function: 'f'
+
+
+function: function_header function_body
+
+
+function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')'
+
+optional_const: TK_PR_CONST | %empty
+
+parameter_list: optional_const type TK_IDENTIFICADOR parameter_list_tail | %empty
+
+parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tail | %empty
+
+
+function_body: command_block
+
+command_block: '{' command_list '}'
+
+command_list: command ';' command_list | %empty
+
+
+command: variable_declaration |
+         attribution |
+         flow_control |
+         io_operation |
+         return_operation |
+         command_block |
+         function_call
+
+/* TODO: implement command types */
+variable_declaration: "variable_declaration"
+attribution: "attribution"
+flow_control: "flow_control"
+io_operation: "io_operation"
+return_operation: "return_operation"
+command_block: "command_block"
+function_call: "function_call"
+
+/* TODO: implement expressions */
+// expression: %empty
 
 %%
 

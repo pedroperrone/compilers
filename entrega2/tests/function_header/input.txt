@@ -1,0 +1,5 @@
+static int foo() {}
+float foo(int a) {}
+char foo(bool a, int b) {}
+string foo (const string a) {}
+bool foo(const char a, const float b) {}
