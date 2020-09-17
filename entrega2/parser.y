@@ -74,9 +74,13 @@ type: TK_PR_INT |
       TK_PR_CHAR |
       TK_PR_STRING
 
-identifiers_list: TK_IDENTIFICADOR identifiers_list_tail
+identifiers_list: identifier identifiers_list_tail
 
-identifiers_list_tail: ',' TK_IDENTIFICADOR identifiers_list_tail | %empty
+identifier: TK_IDENTIFICADOR | vector_identifier
+
+vector_identifier: TK_IDENTIFICADOR '[' TK_LIT_INT ']'
+
+identifiers_list_tail: ',' identifier identifiers_list_tail | %empty
 
 
 

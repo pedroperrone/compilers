@@ -43,3 +43,5 @@ function run_test {
 for test in tests/*; do
   run_test $test
 done
+
+echo -ne "\e[0m"
