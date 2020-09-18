@@ -1,0 +1,43 @@
+int global1, global2;
+
+int vector[20];
+
+int main(string param1, bool param2) {
+  int i, local;
+  int local1, local2;
+
+  global1 = *;
+  vector[*] = *;
+
+  if(*) {
+    local1 = *;
+  } else {
+    local2 = *;
+  }
+
+  for(i = *: *: i = *) {
+    local = *;
+    continue;
+  }
+
+  while(*) do {
+    local = *;
+    break;
+  }
+
+  input local;
+
+  output local;
+  output 1;
+  output true;
+  output "aa";
+
+  foo();
+  foo(*);
+  foo(1, "aa", *);
+
+  local << 1;
+  vector[*] >> 43;
+
+  return *;
+}

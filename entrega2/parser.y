@@ -63,10 +63,9 @@ start: global_variable start |
        function start |
        %empty
 
-/* TODO: allow vector types */
-global_variable: optional_static type identifiers_list ';'
 
 optional_static: TK_PR_STATIC | %empty
+optional_const: TK_PR_CONST | %empty
 
 type: TK_PR_INT |
       TK_PR_FLOAT |
@@ -74,54 +73,79 @@ type: TK_PR_INT |
       TK_PR_CHAR |
       TK_PR_STRING
 
-identifiers_list: identifier identifiers_list_tail
+literal: TK_LIT_INT |
+         TK_LIT_FLOAT |
+         TK_LIT_TRUE |
+         TK_LIT_FALSE |
+         TK_LIT_CHAR |
+         TK_LIT_STRING
 
-identifier: TK_IDENTIFICADOR | vector_identifier
 
-vector_identifier: TK_IDENTIFICADOR '[' TK_LIT_INT ']'
+/* === Global Variable === */
 
-identifiers_list_tail: ',' identifier identifiers_list_tail | %empty
+global_variable: optional_static type global_identifier_list ';'
+optional_vector_definition_brackets: '[' TK_LIT_INT ']' | %empty
+optional_vector_access_brackets: '[' expression ']' | %empty
+global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets |
+                        TK_IDENTIFICADOR optional_vector_definition_brackets ',' global_identifier_list
 
 
+/* === Function === */
 
 function: function_header function_body
 
-
 function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')'
-
-optional_const: TK_PR_CONST | %empty
-
 parameter_list: optional_const type TK_IDENTIFICADOR parameter_list_tail | %empty
-
 parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tail | %empty
 
-
 function_body: command_block
-
 command_block: '{' command_list '}'
+command_list: command command_list | %empty
 
-command_list: command ';' command_list | %empty
 
+/* === Command === */
 
-command: variable_declaration |
-         attribution |
-         flow_control |
-         io_operation |
-         return_operation |
+command: variable_declaration ';' |
+         variable_attribution ';' |
+         control_flow |
+         io_operation ';' |
+         return_operation ';' |
          command_block |
-         function_call
+         function_call ';' |
+         shift_operation ';'
 
-/* TODO: implement command types */
-variable_declaration: "variable_declaration"
-attribution: "attribution"
-flow_control: "flow_control"
-io_operation: "io_operation"
-return_operation: "return_operation"
-command_block: "command_block"
-function_call: "function_call"
+variable_declaration: optional_static optional_const type local_identifier_list
+local_identifier_list: TK_IDENTIFICADOR |
+                       TK_IDENTIFICADOR ',' local_identifier_list
 
-/* TODO: implement expressions */
-// expression: %empty
+variable_attribution: TK_IDENTIFICADOR optional_vector_access_brackets '=' expression
+
+control_flow: if | for | while
+if: TK_PR_IF '(' expression ')' command_block optional_else
+optional_else: TK_PR_ELSE command_block | %empty
+for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' command_block
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block
+
+io_operation: input | output
+input: TK_PR_INPUT TK_IDENTIFICADOR
+output: TK_PR_OUTPUT TK_IDENTIFICADOR | TK_PR_OUTPUT literal
+
+return_operation: return | break | continue
+return: TK_PR_RETURN expression
+break: TK_PR_BREAK
+continue: TK_PR_CONTINUE
+
+function_call: TK_IDENTIFICADOR '(' argument_list ')'
+argument_list: argument argument_list_tail | %empty
+argument_list_tail: ',' argument argument_list_tail | %empty
+argument: literal | expression
+
+shift_operation: TK_IDENTIFICADOR optional_vector_access_brackets shift_operator TK_LIT_INT
+shift_operator: TK_OC_SL | TK_OC_SR
+
+/* === Expression === */
+
+expression: '*'
 
 %%
 
