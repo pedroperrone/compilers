@@ -1,1 +1,1 @@
-ERROR: line 2 - syntax error
+ERROR: line 2 - syntax error, unexpected $end, expecting ';'

@@ -5,7 +5,7 @@ TEST_PASSED_MESSAGE="\e[32mTest passed:"
 TEST_FAILED_MESSAGE="\e[31mTest failed:"
 
 function run_error_test {
-  ./$BIN_NAME < $test_path/input.txt > $test_path/actual.txt
+  ./$BIN_NAME < $test_path/input.txt 2> $test_path/actual.txt
   result=$?
 
   if [ $result -eq 0 ]; then

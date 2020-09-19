@@ -5,6 +5,9 @@ void yyerror (char const *s);
 extern int yylineno;
 %}
 
+%verbose
+%define parse.error verbose
+
 %token TK_PR_INT
 %token TK_PR_FLOAT
 %token TK_PR_BOOL
@@ -166,5 +169,5 @@ expression_literal: TK_LIT_INT | TK_LIT_FLOAT | TK_LIT_TRUE | TK_LIT_FALSE
 %%
 
 void yyerror(char const *s) {
-    printf("ERROR: line %d - %s\n", yylineno, s);
+    fprintf(stderr,"ERROR: line %d - %s\n", yylineno, s);
 }
