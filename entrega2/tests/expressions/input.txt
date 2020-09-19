@@ -1,0 +1,38 @@
+int main(string param1, bool param2) {
+  // unary
+  id = +5;
+  id = -var;
+  id = !foo();
+  id = &bar(var, other_var);
+  id = *1;
+  id = ?true;
+  id = #what;
+
+  // binary
+  id = 5 + 5;
+  id = foo() - 3.6;
+  id = lala / true;
+  id = lala % true;
+  id = lala | true;
+  id = lala & true;
+  id = lala ^ true;
+  id = lala <= true;
+  id = lala >= true;
+  id = lala == true;
+  id = lala != true;
+  id = lala && true;
+  id = lala << true;
+  id = lala >> true;
+
+  // Multiple
+  id = lala + true - 5 / !bola;
+
+  // Parenthesis
+  id = (lala + 3);
+  id = 5 + (lala + 3);
+  id = (lala + 3) + 5;
+  id = (true / (5 - 3) + 1) && (!3.5);
+
+  // Ternary
+  id = (foo() + 1) ? !bola : (8 - 3 + 2) / 90 - (3 && 2);
+}

@@ -6,22 +6,22 @@ int main(string param1, bool param2) {
   int i, local;
   int local1, local2;
 
-  global1 = *;
-  vector[*] = *;
+  global1 = -5;
+  vector[foo()] = global1;
 
-  if(*) {
-    local1 = *;
+  if(!true) {
+    local1 = !foo;
   } else {
-    local2 = *;
+    local2 = foo;
   }
 
-  for(i = *: *: i = *) {
-    local = *;
+  for(i = 0: *i: i = -1) {
+    local = true;
     continue;
   }
 
-  while(*) do {
-    local = *;
+  while(*1) do {
+    local = *1;
     break;
   }
 
@@ -33,11 +33,11 @@ int main(string param1, bool param2) {
   output "aa";
 
   foo();
-  foo(*);
-  foo(1, "aa", *);
+  foo(*1);
+  foo(1, "aa", *1);
 
   local << 1;
-  vector[*] >> 43;
+  vector[access()] >> 43;
 
-  return *;
+  return 0;
 }

@@ -138,14 +138,30 @@ continue: TK_PR_CONTINUE
 function_call: TK_IDENTIFICADOR '(' argument_list ')'
 argument_list: argument argument_list_tail | %empty
 argument_list_tail: ',' argument argument_list_tail | %empty
-argument: literal | expression
+argument: expression
 
 shift_operation: TK_IDENTIFICADOR optional_vector_access_brackets shift_operator TK_LIT_INT
 shift_operator: TK_OC_SL | TK_OC_SR
 
 /* === Expression === */
 
-expression: '*'
+expression: unary_expression | expression_term | binary_expression | ternary_expression
+
+expression_term: literal | identifier | function_call | '(' expression ')'
+
+unary_expression: unary_operator expression
+
+unary_operator: '+' | '-' | '!' | '&' | '*' | '?' | '#'
+
+binary_expression: expression_term binary_operator expression
+
+ternary_expression: expression_term '?' expression ':' expression
+
+// TODO: pipes
+binary_operator: '+' | '-' | '/' | '%' | '|' | '&' | '^' | TK_OC_LE | TK_OC_GE | TK_OC_EQ | TK_OC_NE | TK_OC_AND | TK_OC_OR | TK_OC_SL | TK_OC_SR
+
+/* TODO: define identifier to access local and global identifiers, simple or array */
+identifier: TK_IDENTIFICADOR | "foo"
 
 %%
 
