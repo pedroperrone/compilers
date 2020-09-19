@@ -2,6 +2,7 @@ int main(string param1, bool param2) {
   // unary
   id = +5;
   id = -var;
+  id = vector[1];
   id = !foo();
   id = &bar(var, other_var);
   id = *1;

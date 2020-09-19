@@ -86,6 +86,7 @@ literal: TK_LIT_INT |
 global_variable: optional_static type global_identifier_list ';'
 optional_vector_definition_brackets: '[' TK_LIT_INT ']' | %empty
 optional_vector_access_brackets: '[' expression ']' | %empty
+identifier_access: TK_IDENTIFICADOR optional_vector_access_brackets
 global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets |
                         TK_IDENTIFICADOR optional_vector_definition_brackets ',' global_identifier_list
 
@@ -107,18 +108,19 @@ command_list: command command_list | %empty
 
 command: variable_declaration ';' |
          variable_attribution ';' |
-         control_flow |
+         control_flow ';' |
          io_operation ';' |
          return_operation ';' |
-         command_block |
+         command_block ';' |
          function_call ';' |
          shift_operation ';'
 
 variable_declaration: optional_static optional_const type local_identifier_list
-local_identifier_list: TK_IDENTIFICADOR |
-                       TK_IDENTIFICADOR ',' local_identifier_list
+local_identifier_list: TK_IDENTIFICADOR optional_attribution |
+                       TK_IDENTIFICADOR optional_attribution ',' local_identifier_list
+optional_attribution: TK_OC_LE TK_IDENTIFICADOR | TK_OC_LE literal | %empty
 
-variable_attribution: TK_IDENTIFICADOR optional_vector_access_brackets '=' expression
+variable_attribution: identifier_access '=' expression
 
 control_flow: if | for | while
 if: TK_PR_IF '(' expression ')' command_block optional_else
@@ -140,14 +142,14 @@ argument_list: argument argument_list_tail | %empty
 argument_list_tail: ',' argument argument_list_tail | %empty
 argument: expression
 
-shift_operation: TK_IDENTIFICADOR optional_vector_access_brackets shift_operator TK_LIT_INT
+shift_operation: identifier_access shift_operator TK_LIT_INT
 shift_operator: TK_OC_SL | TK_OC_SR
 
 /* === Expression === */
 
 expression: unary_expression | expression_term | binary_expression | ternary_expression
 
-expression_term: literal | identifier | function_call | '(' expression ')'
+expression_term: expression_literal | identifier_access | function_call | '(' expression ')'
 
 unary_expression: unary_operator expression
 
@@ -157,11 +159,9 @@ binary_expression: expression_term binary_operator expression
 
 ternary_expression: expression_term '?' expression ':' expression
 
-// TODO: pipes
 binary_operator: '+' | '-' | '/' | '%' | '|' | '&' | '^' | TK_OC_LE | TK_OC_GE | TK_OC_EQ | TK_OC_NE | TK_OC_AND | TK_OC_OR | TK_OC_SL | TK_OC_SR
 
-/* TODO: define identifier to access local and global identifiers, simple or array */
-identifier: TK_IDENTIFICADOR | "foo"
+expression_literal: TK_LIT_INT | TK_LIT_FLOAT | TK_LIT_TRUE | TK_LIT_FALSE
 
 %%
 

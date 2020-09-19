@@ -3,8 +3,8 @@ int global1, global2;
 int vector[20];
 
 int main(string param1, bool param2) {
-  int i, local;
-  int local1, local2;
+  int i, local <= 4;
+  int local1 <= local, local2;
 
   global1 = -5;
   vector[foo()] = global1;
@@ -13,17 +13,21 @@ int main(string param1, bool param2) {
     local1 = !foo;
   } else {
     local2 = foo;
-  }
+  };
 
   for(i = 0: *i: i = -1) {
     local = true;
     continue;
-  }
+  };
 
   while(*1) do {
     local = *1;
     break;
-  }
+  };
+
+  {
+    global1 = 4;
+  };
 
   input local;
 
@@ -34,7 +38,7 @@ int main(string param1, bool param2) {
 
   foo();
   foo(*1);
-  foo(1, "aa", *1);
+  foo(1+1, ?1, !true);
 
   local << 1;
   vector[access()] >> 43;
