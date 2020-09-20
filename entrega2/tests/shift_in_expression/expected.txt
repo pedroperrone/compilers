@@ -1,0 +1,1 @@
+ERROR: line 2 - syntax error, unexpected TK_OC_SL, expecting ';'

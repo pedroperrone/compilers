@@ -162,7 +162,7 @@ binary_expression: expression_term binary_operator expression
 
 ternary_expression: expression_term '?' expression ':' expression
 
-binary_operator: '+' | '-' | '/' | '%' | '|' | '&' | '^' | TK_OC_LE | TK_OC_GE | TK_OC_EQ | TK_OC_NE | TK_OC_AND | TK_OC_OR | TK_OC_SL | TK_OC_SR
+binary_operator: '+' | '-' | '/' | '%' | '|' | '&' | '^' | TK_OC_LE | TK_OC_GE | TK_OC_EQ | TK_OC_NE | TK_OC_AND | TK_OC_OR
 
 expression_literal: TK_LIT_INT | TK_LIT_FLOAT | TK_LIT_TRUE | TK_LIT_FALSE
 
