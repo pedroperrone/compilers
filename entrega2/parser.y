@@ -104,20 +104,19 @@ parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tai
 
 function_body: command_block
 command_block: '{' command_list '}'
-command_list: command command_list | %empty
+command_list: command ';' command_list | %empty
 
 
 /* === Command === */
 
-command: variable_declaration ';' |
-         variable_attribution ';' |
-         control_flow ';' |
-         io_operation ';' |
-         return_operation ';' |
-         command_block ';' |
-         function_call ';' |
-         shift_operation ';'
-
+command: variable_declaration |
+         variable_attribution |
+         control_flow |
+         io_operation |
+         return_operation |
+         command_block |
+         function_call |
+         shift_operation 
 variable_declaration: optional_static optional_const type local_identifier_list
 local_identifier_list: TK_IDENTIFICADOR optional_attribution |
                        TK_IDENTIFICADOR optional_attribution ',' local_identifier_list
