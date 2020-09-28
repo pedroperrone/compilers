@@ -1,5 +1,13 @@
 %{
 #include "parser.tab.h"
+#include "lexeme.h"
+
+void create_special_char_lexeme();
+void create_operator_lexeme();
+void create_identifier_lexeme();
+void init_non_operator_lexeme(LEXEME_TYPE type);
+void create_literal_lexeme(LITERAL_TYPE type);
+void init_lexeme();
 %}
 %option yylineno
 
@@ -63,31 +71,79 @@ END_MULTILINE_COMMENT "*/"
 "end" { return TK_PR_END; }
 "default" { return TK_PR_DEFAULT; }
 
-"false" { return TK_LIT_FALSE; }
-"true" { return TK_LIT_TRUE; }
+"false" {
+  create_operator_lexeme(BOOL);
+  return TK_LIT_FALSE;
+}
+"true" {
+  create_operator_lexeme(BOOL);
+  return TK_LIT_TRUE;
+}
 
-"<=" { return TK_OC_LE; }
-">=" { return TK_OC_GE; }
-"==" { return TK_OC_EQ; }
-"!=" { return TK_OC_NE; }
-"&&" { return TK_OC_AND; }
-"||" { return TK_OC_OR; }
-"<<" { return TK_OC_SL; }
-">>" { return TK_OC_SR; }
+"<=" {
+  create_operator_lexeme();
+  return TK_OC_LE;
+}
+">=" {
+  create_operator_lexeme();
+  return TK_OC_GE;
+}
+"==" {
+  create_operator_lexeme();
+  return TK_OC_EQ;
+}
+"!=" {
+  create_operator_lexeme();
+  return TK_OC_NE;
+}
+"&&" {
+  create_operator_lexeme();
+  return TK_OC_AND;
+}
+"||" {
+  create_operator_lexeme();
+  return TK_OC_OR;
+}
+"<<" {
+  create_operator_lexeme();
+  return TK_OC_SL;
+}
+">>" {
+  create_operator_lexeme();
+  return TK_OC_SR;
+}
 
-{IDENTIFIER} { return TK_IDENTIFICADOR; }
+{IDENTIFIER} {
+  create_identifier_lexeme();
+  return TK_IDENTIFICADOR;
+}
 
-{CHAR} { return TK_LIT_CHAR; }
+{CHAR} {
+  create_operator_lexeme(CHAR);
+  return TK_LIT_CHAR;
+}
 
-{STRING} { return TK_LIT_STRING; }
+{STRING} {
+  create_operator_lexeme(STRING);
+  return TK_LIT_STRING;
+}
 
-{INTEGER} { return TK_LIT_INT; }
+{INTEGER} {
+  create_operator_lexeme(INT);
+  return TK_LIT_INT;
+}
 
-{FLOAT} { return TK_LIT_FLOAT; }
+{FLOAT} {
+  create_operator_lexeme(FLOAT);
+  return TK_LIT_FLOAT;
+}
 
 {INVALID_SUBSEQUENT_TOKENS} { return TOKEN_ERRO; }
 
-{SPECIAL_CHAR} { return (int) yytext[0]; }
+{SPECIAL_CHAR} {
+  create_special_char_lexeme();
+  return (int) yytext[0];
+}
 
 ({WHITE_SPACES}|{INLINE_COMMENT}) { }
 
@@ -102,4 +158,54 @@ END_MULTILINE_COMMENT "*/"
 
 int get_line_number(void) {
   return yylineno;
+}
+
+void create_special_char_lexeme() {
+  init_non_operator_lexeme(SPECIAL_CHAR);
+}
+
+void create_operator_lexeme() {
+  init_non_operator_lexeme(OPERATOR);
+}
+
+void create_identifier_lexeme() {
+  init_non_operator_lexeme(IDENTIFIER);
+}
+
+void init_non_operator_lexeme(LEXEME_TYPE type) {
+  init_lexeme();
+  yylval.valor_lexico->type = type;
+  yylval.valor_lexico->literal_type = NONE;
+  yylval.valor_lexico->literal_value.string = strdup(yytext);
+}
+
+void create_literal_lexeme(LITERAL_TYPE type) {
+  init_lexeme();
+  yylval.valor_lexico->type = LITERAL;
+  yylval.valor_lexico->literal_type = type;
+  switch(type) {
+  case INT:
+    yylval.valor_lexico->literal_value.int_v = atoi(yytext);
+    break;
+  case FLOAT:
+    yylval.valor_lexico->literal_value.float_v = atof(yytext);
+    break;
+  case CHAR:
+    yylval.valor_lexico->literal_value.char_v = yytext[1];
+    break;
+  case STRING:
+    yylval.valor_lexico->literal_value.string = strdup(yytext);
+    break;
+  case BOOL:
+    if(strcmp(yytext, "true")) {
+      yylval.valor_lexico->literal_value.bool_v = 0;
+    } else {
+      yylval.valor_lexico->literal_value.bool_v = 1;
+    }
+  }
+}
+
+void init_lexeme() {
+	yylval.valor_lexico = (LEXEME*) malloc(sizeof(LEXEME));
+	yylval.valor_lexico->line_number = yylineno;
 }
