@@ -5,6 +5,7 @@
 int yylex(void);
 void yyerror (char const *s);
 extern int yylineno;
+extern void* arvore;
 %}
 
 %verbose
@@ -15,51 +16,51 @@ extern int yylineno;
 	struct node* node;
 }
 
-%token<lexeme> TK_PR_INT
-%token<lexeme> TK_PR_FLOAT
-%token<lexeme> TK_PR_BOOL
-%token<lexeme> TK_PR_CHAR
-%token<lexeme> TK_PR_STRING
-%token<lexeme> TK_PR_IF
-%token<lexeme> TK_PR_THEN
-%token<lexeme> TK_PR_ELSE
-%token<lexeme> TK_PR_WHILE
-%token<lexeme> TK_PR_DO
-%token<lexeme> TK_PR_INPUT
-%token<lexeme> TK_PR_OUTPUT
-%token<lexeme> TK_PR_RETURN
-%token<lexeme> TK_PR_CONST
-%token<lexeme> TK_PR_STATIC
-%token<lexeme> TK_PR_FOREACH
-%token<lexeme> TK_PR_FOR
-%token<lexeme> TK_PR_SWITCH
-%token<lexeme> TK_PR_CASE
-%token<lexeme> TK_PR_BREAK
-%token<lexeme> TK_PR_CONTINUE
-%token<lexeme> TK_PR_CLASS
-%token<lexeme> TK_PR_PRIVATE
-%token<lexeme> TK_PR_PUBLIC
-%token<lexeme> TK_PR_PROTECTED
-%token<lexeme> TK_PR_END
-%token<lexeme> TK_PR_DEFAULT
-%token<lexeme> TK_OC_LE
-%token<lexeme> TK_OC_GE
-%token<lexeme> TK_OC_EQ
-%token<lexeme> TK_OC_NE
-%token<lexeme> TK_OC_AND
-%token<lexeme> TK_OC_OR
-%token<lexeme> TK_OC_SL
-%token<lexeme> TK_OC_SR
-%token<lexeme> TK_OC_FORWARD_PIPE
-%token<lexeme> TK_OC_BASH_PIPE
-%token<lexeme> TK_LIT_INT
-%token<lexeme> TK_LIT_FLOAT
-%token<lexeme> TK_LIT_FALSE
-%token<lexeme> TK_LIT_TRUE
-%token<lexeme> TK_LIT_CHAR
-%token<lexeme> TK_LIT_STRING
-%token<lexeme> TK_IDENTIFICADOR
-%token<lexeme> TOKEN_ERRO
+%token<valor_lexico> TK_PR_INT
+%token<valor_lexico> TK_PR_FLOAT
+%token<valor_lexico> TK_PR_BOOL
+%token<valor_lexico> TK_PR_CHAR
+%token<valor_lexico> TK_PR_STRING
+%token<valor_lexico> TK_PR_IF
+%token<valor_lexico> TK_PR_THEN
+%token<valor_lexico> TK_PR_ELSE
+%token<valor_lexico> TK_PR_WHILE
+%token<valor_lexico> TK_PR_DO
+%token<valor_lexico> TK_PR_INPUT
+%token<valor_lexico> TK_PR_OUTPUT
+%token<valor_lexico> TK_PR_RETURN
+%token<valor_lexico> TK_PR_CONST
+%token<valor_lexico> TK_PR_STATIC
+%token<valor_lexico> TK_PR_FOREACH
+%token<valor_lexico> TK_PR_FOR
+%token<valor_lexico> TK_PR_SWITCH
+%token<valor_lexico> TK_PR_CASE
+%token<valor_lexico> TK_PR_BREAK
+%token<valor_lexico> TK_PR_CONTINUE
+%token<valor_lexico> TK_PR_CLASS
+%token<valor_lexico> TK_PR_PRIVATE
+%token<valor_lexico> TK_PR_PUBLIC
+%token<valor_lexico> TK_PR_PROTECTED
+%token<valor_lexico> TK_PR_END
+%token<valor_lexico> TK_PR_DEFAULT
+%token<valor_lexico> TK_OC_LE
+%token<valor_lexico> TK_OC_GE
+%token<valor_lexico> TK_OC_EQ
+%token<valor_lexico> TK_OC_NE
+%token<valor_lexico> TK_OC_AND
+%token<valor_lexico> TK_OC_OR
+%token<valor_lexico> TK_OC_SL
+%token<valor_lexico> TK_OC_SR
+%token<valor_lexico> TK_OC_FORWARD_PIPE
+%token<valor_lexico> TK_OC_BASH_PIPE
+%token<valor_lexico> TK_LIT_INT
+%token<valor_lexico> TK_LIT_FLOAT
+%token<valor_lexico> TK_LIT_FALSE
+%token<valor_lexico> TK_LIT_TRUE
+%token<valor_lexico> TK_LIT_CHAR
+%token<valor_lexico> TK_LIT_STRING
+%token<valor_lexico> TK_IDENTIFICADOR
+%token<valor_lexico> TOKEN_ERRO
 
 %type<node>programa
 %type<node>start
@@ -117,11 +118,11 @@ extern int yylineno;
 
 %%
 
-programa: start
+programa: start { arvore = $1; }
 
-start: global_variable start {}
-        | function start {}
-        | %empty{}
+start: global_variable start { $$ = $1; add_child($$, $2); }
+        | function start { $$ = $1; add_child($$, $2); }
+        | %empty{ $$ = NULL; }
 
 
 optional_static: TK_PR_STATIC {}
@@ -162,30 +163,30 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {}
 
 /* === Function === */
 
-function: function_header function_body {}
+function: function_header function_body { $$ = $1; add_child($$, $2); }
 
-function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')' {}
+function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')' { $$ = create_node($3); }
 
 parameter_list: optional_const type TK_IDENTIFICADOR parameter_list_tail {}
         | %empty {}
 parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tail {}
         | %empty {}
 
-function_body: command_block {}
-command_block: '{' command_list '}' {}
-command_list: command ';' command_list {}
-        | %empty {}
+function_body: command_block { $$ = $1; }
+command_block: '{' command_list '}' { $$ = $2; }
+command_list: command ';' command_list { $$ = $1; add_child($$, $3); }
+        | %empty { $$ = NULL; }
 
 
 /* === Command === */
 
 command: variable_declaration {}
-        | variable_attribution {}
+        | variable_attribution { $$ = $1; }
         | control_flow {}
         | io_operation {}
         | return_operation {}
         | command_block {}
-        | function_call {}
+        | function_call { $$ = $1; }
         | shift_operation {}
 
 variable_declaration: optional_static optional_const type local_identifier_list {}
@@ -213,19 +214,19 @@ input: TK_PR_INPUT TK_IDENTIFICADOR {}
 output: TK_PR_OUTPUT TK_IDENTIFICADOR {}
         | TK_PR_OUTPUT literal {}
 
-return_operation: return {}
+return_operation: return { $$ = $1; }
         | break {}
         | continue {}
-return: TK_PR_RETURN expression {}
+return: TK_PR_RETURN expression { $$ = create_node($1); add_child($$, $2); }
 break: TK_PR_BREAK {}
 continue: TK_PR_CONTINUE {}
 
-function_call: TK_IDENTIFICADOR '(' argument_list ')' {}
-argument_list: argument argument_list_tail {}
-        | %empty {}
+function_call: TK_IDENTIFICADOR '(' argument_list ')' { $$ = create_node($1); add_child($$, $3); }
+argument_list: argument argument_list_tail { $$ = $1; add_child($$, $2); }
+        | %empty { $$ = NULL; }
 argument_list_tail: ',' argument argument_list_tail {}
-        | %empty {}
-argument: expression {}
+        | %empty { $$ = NULL; }
+argument: expression { $$ = $1; }
 
 shift_operation: identifier_access shift_operator TK_LIT_INT {}
 shift_operator: TK_OC_SL {}
@@ -234,11 +235,11 @@ shift_operator: TK_OC_SL {}
 /* === Expression === */
 
 expression: unary_expression {}
-        | expression_term {}
+        | expression_term { $$ = $1; }
         | binary_expression {}
         | ternary_expression {}
 
-expression_term: expression_literal {}
+expression_term: expression_literal { $$ = $1; }
         | identifier_access {}
         | function_call {}
         | '(' expression ')' {}
@@ -271,7 +272,7 @@ binary_operator: '+' {}
         | TK_OC_AND {}
         | TK_OC_OR {}
 
-expression_literal: TK_LIT_INT {}
+expression_literal: TK_LIT_INT { $$ = create_node($1); }
         | TK_LIT_FLOAT {}
         | TK_LIT_TRUE {}
         | TK_LIT_FALSE {}

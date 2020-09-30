@@ -119,22 +119,22 @@ END_MULTILINE_COMMENT "*/"
 }
 
 {CHAR} {
-  create_operator_lexeme(CHAR);
+  create_literal_lexeme(CHAR);
   return TK_LIT_CHAR;
 }
 
 {STRING} {
-  create_operator_lexeme(STRING);
+  create_literal_lexeme(STRING);
   return TK_LIT_STRING;
 }
 
 {INTEGER} {
-  create_operator_lexeme(INT);
+  create_literal_lexeme(INT);
   return TK_LIT_INT;
 }
 
 {FLOAT} {
-  create_operator_lexeme(FLOAT);
+  create_literal_lexeme(FLOAT);
   return TK_LIT_FLOAT;
 }
 
