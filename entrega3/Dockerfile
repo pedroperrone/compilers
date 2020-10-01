@@ -6,6 +6,7 @@ RUN apt-get -y update && \
     apt-get install -y gcc && \
     apt-get install -y flex && \
     apt-get install -y bison && \
+    apt-get install -y valgrind && \
     apt-get install -y colordiff
 
 WORKDIR /app

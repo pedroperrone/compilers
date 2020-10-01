@@ -15,3 +15,4 @@ typedef struct node
 NODE *create_node(LEXEME *lexeme);
 void add_child(NODE *parent, NODE *child);
 void print_node(NODE *node);
+void free_lexeme(LEXEME *lexeme);

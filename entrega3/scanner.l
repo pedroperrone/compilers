@@ -161,7 +161,10 @@ int get_line_number(void) {
 }
 
 void create_special_char_lexeme() {
-  init_non_operator_lexeme(SPECIAL_CHAR);
+  init_lexeme();
+  yylval.valor_lexico->type = SPECIAL_CHAR;
+  yylval.valor_lexico->literal_type = NONE;
+  yylval.valor_lexico->literal_value.char_v = yytext[0];
 }
 
 void create_operator_lexeme() {

@@ -19,7 +19,36 @@ void exporta(void *root)
 }
 
 // free
-void libera(void *tree) {}
+void libera(void *root)
+{
+    if (root == NULL)
+        return;
+
+    NODE *node = (NODE *)root;
+    for (int i = 0; i < node->children_count; i++)
+    {
+        libera(node->children[i]);
+    }
+    free(node->children);
+    free_lexeme(node->lexeme);
+    free(node);
+}
+
+void free_lexeme(LEXEME *lexeme)
+{
+    if (lexeme == NULL)
+        return;
+    char *string_value = lexeme->literal_value.string;
+    LEXEME_TYPE lexeme_type = lexeme->type;
+    LITERAL_TYPE literal_type = lexeme->literal_type;
+    free(lexeme);
+    if (lexeme_type == LITERAL)
+        if (literal_type != STRING)
+            return;
+    if (string_value == NULL)
+        return;
+    free(string_value);
+}
 
 NODE *create_node(LEXEME *lexeme)
 {
