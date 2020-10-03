@@ -6,7 +6,8 @@ typedef enum lexeme_type
     SPECIAL_CHAR,
     OPERATOR,
     IDENTIFIER,
-    LITERAL
+    LITERAL,
+    KEYWORD
 } LEXEME_TYPE;
 
 typedef enum literal_type

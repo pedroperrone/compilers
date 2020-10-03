@@ -1,0 +1,209 @@
+[NODE] main
+[NODE] input
+[NODE] var1
+[NODE] output
+[NODE] var2
+[NODE] output
+[NODE] "Hello world!"
+[NODE] output
+[NODE] F
+[NODE] break
+[NODE] continue
+[NODE] return
+[NODE] 1
+[NODE] return
+[NODE] true
+[NODE] return
+[NODE] &&
+[NODE] true
+[NODE] false
+[NODE] return
+[NODE] +
+[NODE] 2.000000
+[NODE] 0.025000
+[NODE] return
+[NODE] ?:
+[NODE] true
+[NODE] call foo
+[NODE] 1
+[NODE] ?
+[NODE] 0
+[NODE] return
+[NODE] +
+[NODE] 3
+[NODE] -
+[NODE] 4
+[NODE] 5
+[NODE] return
+[NODE] ?
+[NODE] 1
+[NODE] return
+[NODE] var
+[NODE] return
+[NODE] []
+[NODE] var
+[NODE] 1
+[NODE] call foo
+[NODE] call bar
+[NODE] 1
+[NODE] call baz
+[NODE] 3
+[NODE] 4
+[NODE] <=
+[NODE] var1
+[NODE] 4
+[NODE] <=
+[NODE] var2
+[NODE] var1
+[NODE] =
+[NODE] var1
+[NODE] 4
+[NODE] =
+[NODE] []
+[NODE] var2
+[NODE] 0
+[NODE] 2
+[NODE] <<
+[NODE] var1
+[NODE] 4
+[NODE] >>
+[NODE] []
+[NODE] var2
+[NODE] 0
+[NODE] 2
+[NODE] if
+[NODE] true
+[NODE] =
+[NODE] var
+[NODE] 1
+[NODE] if
+[NODE] true
+[NODE] =
+[NODE] x
+[NODE] true
+[NODE] =
+[NODE] z
+[NODE] false
+[NODE] for
+[NODE] =
+[NODE] i
+[NODE] 0
+[NODE] true
+[NODE] =
+[NODE] i
+[NODE] +
+[NODE] i
+[NODE] 1
+[NODE] =
+[NODE] j
+[NODE] 2
+[NODE] while
+[NODE] true
+[NODE] =
+[NODE] k
+[NODE] 3
+[NODE] second_function
+[CONNECTION] main => input
+[CONNECTION] input => var1
+[CONNECTION] input => output
+[CONNECTION] output => var2
+[CONNECTION] output => output
+[CONNECTION] output => "Hello world!"
+[CONNECTION] output => output
+[CONNECTION] output => F
+[CONNECTION] output => break
+[CONNECTION] break => continue
+[CONNECTION] continue => return
+[CONNECTION] return => 1
+[CONNECTION] return => return
+[CONNECTION] return => true
+[CONNECTION] return => return
+[CONNECTION] return => &&
+[CONNECTION] && => true
+[CONNECTION] && => false
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => 2.000000
+[CONNECTION] + => 0.025000
+[CONNECTION] return => return
+[CONNECTION] return => ?:
+[CONNECTION] ?: => true
+[CONNECTION] ?: => call foo
+[CONNECTION] call foo => 1
+[CONNECTION] ?: => ?
+[CONNECTION] ? => 0
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => 3
+[CONNECTION] + => -
+[CONNECTION] - => 4
+[CONNECTION] - => 5
+[CONNECTION] return => return
+[CONNECTION] return => ?
+[CONNECTION] ? => 1
+[CONNECTION] return => return
+[CONNECTION] return => var
+[CONNECTION] return => return
+[CONNECTION] return => []
+[CONNECTION] [] => var
+[CONNECTION] [] => 1
+[CONNECTION] return => call foo
+[CONNECTION] call foo => call bar
+[CONNECTION] call bar => 1
+[CONNECTION] call bar => call baz
+[CONNECTION] call baz => 3
+[CONNECTION] 3 => 4
+[CONNECTION] call baz => <=
+[CONNECTION] <= => var1
+[CONNECTION] <= => 4
+[CONNECTION] <= => <=
+[CONNECTION] <= => var2
+[CONNECTION] <= => var1
+[CONNECTION] <= => =
+[CONNECTION] = => var1
+[CONNECTION] = => 4
+[CONNECTION] = => =
+[CONNECTION] = => []
+[CONNECTION] [] => var2
+[CONNECTION] [] => 0
+[CONNECTION] = => 2
+[CONNECTION] = => <<
+[CONNECTION] << => var1
+[CONNECTION] << => 4
+[CONNECTION] << => >>
+[CONNECTION] >> => []
+[CONNECTION] [] => var2
+[CONNECTION] [] => 0
+[CONNECTION] >> => 2
+[CONNECTION] >> => if
+[CONNECTION] if => true
+[CONNECTION] if => =
+[CONNECTION] = => var
+[CONNECTION] = => 1
+[CONNECTION] if => if
+[CONNECTION] if => true
+[CONNECTION] if => =
+[CONNECTION] = => x
+[CONNECTION] = => true
+[CONNECTION] if => =
+[CONNECTION] = => z
+[CONNECTION] = => false
+[CONNECTION] if => for
+[CONNECTION] for => =
+[CONNECTION] = => i
+[CONNECTION] = => 0
+[CONNECTION] for => true
+[CONNECTION] for => =
+[CONNECTION] = => i
+[CONNECTION] = => +
+[CONNECTION] + => i
+[CONNECTION] + => 1
+[CONNECTION] for => =
+[CONNECTION] = => j
+[CONNECTION] = => 2
+[CONNECTION] for => while
+[CONNECTION] while => true
+[CONNECTION] while => =
+[CONNECTION] = => k
+[CONNECTION] = => 3
+[CONNECTION] main => second_function

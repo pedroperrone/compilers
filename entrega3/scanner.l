@@ -5,13 +5,15 @@
 void create_special_char_lexeme();
 void create_operator_lexeme();
 void create_identifier_lexeme();
+void create_keyword_lexeme();
 void init_non_operator_lexeme(LEXEME_TYPE type);
 void create_literal_lexeme(LITERAL_TYPE type);
 void init_lexeme();
 %}
 %option yylineno
 
-SPECIAL_CHAR [,;:()\[\]{}+-|*/<>=!&%#^.$]
+SPECIAL_CHAR [,;:()\[\]{}+-|*/<>=!&%#^.$?]
+RELEVANT_SPECIAL_CHAR [-+*/%|&^:\[<>=?!#]
 
 LETTER_OR_UNDERSCORE [a-zA-Z_]
 NUMBER [0-9]
@@ -43,40 +45,121 @@ END_MULTILINE_COMMENT "*/"
 
 %%
 
-"int" { return TK_PR_INT; }
-"float" { return TK_PR_FLOAT; }
-"bool" { return TK_PR_BOOL; }
-"char" { return TK_PR_CHAR; }
-"string" { return TK_PR_STRING; }
-"if" { return TK_PR_IF; }
-"then" { return TK_PR_THEN; }
-"else" { return TK_PR_ELSE; }
-"while" { return TK_PR_WHILE; }
-"do" { return TK_PR_DO; }
-"input" { return TK_PR_INPUT; }
-"output" { return TK_PR_OUTPUT; }
-"return" { return TK_PR_RETURN; }
-"const" { return TK_PR_CONST; }
-"static" { return TK_PR_STATIC; }
-"foreach" { return TK_PR_FOREACH; }
-"for" { return TK_PR_FOR; }
-"switch" { return TK_PR_SWITCH; }
-"case" { return TK_PR_CASE; }
-"break" { return TK_PR_BREAK; }
-"continue" { return TK_PR_CONTINUE; }
-"class" { return TK_PR_CLASS; }
-"private" { return TK_PR_PRIVATE; }
-"public" { return TK_PR_PUBLIC; }
-"protected" { return TK_PR_PROTECTED; }
-"end" { return TK_PR_END; }
-"default" { return TK_PR_DEFAULT; }
+"int" {
+  // create_keyword_lexeme();
+  return TK_PR_INT;
+}
+"float" {
+  // create_keyword_lexeme();
+  return TK_PR_FLOAT;
+}
+"bool" {
+  // create_keyword_lexeme();
+  return TK_PR_BOOL;
+}
+"char" {
+  // create_keyword_lexeme();
+  return TK_PR_CHAR;
+}
+"string" {
+  // create_keyword_lexeme();
+  return TK_PR_STRING;
+}
+"if" {
+  create_keyword_lexeme();
+  return TK_PR_IF;
+}
+"then" {
+  // create_keyword_lexeme();
+  return TK_PR_THEN;
+}
+"else" {
+  create_keyword_lexeme();
+  return TK_PR_ELSE;
+}
+"while" {
+  create_keyword_lexeme();
+  return TK_PR_WHILE;
+}
+"do" {
+  // create_keyword_lexeme();
+  return TK_PR_DO;
+}
+"input" {
+  create_keyword_lexeme();
+  return TK_PR_INPUT;
+}
+"output" {
+  create_keyword_lexeme();
+  return TK_PR_OUTPUT;
+}
+"return" {
+  create_keyword_lexeme();
+  return TK_PR_RETURN;
+}
+"const" {
+  create_keyword_lexeme();
+  return TK_PR_CONST;
+}
+"static" {
+  create_keyword_lexeme();
+  return TK_PR_STATIC;
+}
+"foreach" {
+  create_keyword_lexeme();
+  return TK_PR_FOREACH;
+}
+"for" {
+  create_keyword_lexeme();
+  return TK_PR_FOR;
+}
+"switch" {
+  create_keyword_lexeme();
+  return TK_PR_SWITCH;
+}
+"case" {
+  create_keyword_lexeme();
+  return TK_PR_CASE;
+}
+"break" {
+  create_keyword_lexeme();
+  return TK_PR_BREAK;
+}
+"continue" {
+  create_keyword_lexeme();
+  return TK_PR_CONTINUE;
+}
+"class" {
+  create_keyword_lexeme();
+  return TK_PR_CLASS;
+}
+"private" {
+  create_keyword_lexeme();
+  return TK_PR_PRIVATE;
+}
+"public" {
+  create_keyword_lexeme();
+  return TK_PR_PUBLIC;
+}
+"protected" {
+  create_keyword_lexeme();
+  return TK_PR_PROTECTED;
+}
+"end" {
+  create_keyword_lexeme();
+  return TK_PR_END;
+}
+"default" {
+  create_keyword_lexeme();
+  return TK_PR_DEFAULT;
+}
 
 "false" {
-  create_operator_lexeme(BOOL);
+  create_literal_lexeme(BOOL);
   return TK_LIT_FALSE;
 }
 "true" {
-  create_operator_lexeme(BOOL);
+  create_literal_lexeme(BOOL);
   return TK_LIT_TRUE;
 }
 
@@ -140,8 +223,12 @@ END_MULTILINE_COMMENT "*/"
 
 {INVALID_SUBSEQUENT_TOKENS} { return TOKEN_ERRO; }
 
-{SPECIAL_CHAR} {
+{RELEVANT_SPECIAL_CHAR} {
   create_special_char_lexeme();
+  return (int) yytext[0];
+}
+
+{SPECIAL_CHAR} {
   return (int) yytext[0];
 }
 
@@ -173,6 +260,10 @@ void create_operator_lexeme() {
 
 void create_identifier_lexeme() {
   init_non_operator_lexeme(IDENTIFIER);
+}
+
+void create_keyword_lexeme() {
+  init_non_operator_lexeme(KEYWORD);
 }
 
 void init_non_operator_lexeme(LEXEME_TYPE type) {

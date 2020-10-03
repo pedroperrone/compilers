@@ -6,15 +6,45 @@
 // export
 void exporta(void *root)
 {
-    if (root == NULL)
-        return;
     NODE *node = (NODE *)root;
-    print_node(node);
+
+    print_all_nodes(node);
+    print_all_connections(node);
+}
+
+void print_all_nodes(NODE *node)
+{
+    if (node == NULL)
+        return;
+
+    printf("[NODE] ");
+    print_node_label(node);
+    printf("\n");
+
     if (node->children == NULL)
         return;
     for (int i = 0; i < node->children_count; i++)
     {
-        exporta(node->children[i]);
+        print_all_nodes(node->children[i]);
+    }
+}
+
+void print_all_connections(NODE *node)
+{
+    if (node == NULL)
+        return;
+
+    if (node->children == NULL)
+        return;
+    for (int i = 0; i < node->children_count; i++)
+    {
+        printf("[CONNECTION] ");
+        print_node_label(node);
+        printf(" => ");
+        print_node_label(node->children[i]);
+        printf("\n");
+
+        print_all_connections(node->children[i]);
     }
 }
 
@@ -38,6 +68,7 @@ void free_lexeme(LEXEME *lexeme)
 {
     if (lexeme == NULL)
         return;
+
     char *string_value = lexeme->literal_value.string;
     LEXEME_TYPE lexeme_type = lexeme->type;
     LITERAL_TYPE literal_type = lexeme->literal_type;
@@ -45,12 +76,19 @@ void free_lexeme(LEXEME *lexeme)
     if (lexeme_type == LITERAL)
         if (literal_type != STRING)
             return;
-    if (string_value == NULL)
+
+    if (lexeme_type == SPECIAL_CHAR)
         return;
+
     free(string_value);
 }
 
 NODE *create_node(LEXEME *lexeme)
+{
+    return create_node_with_type(ANY, lexeme);
+}
+
+NODE *create_node_with_type(NODE_TYPE type, LEXEME *lexeme)
 {
     if (lexeme == NULL)
         return NULL;
@@ -58,6 +96,7 @@ NODE *create_node(LEXEME *lexeme)
     node->children_count = 0;
     node->children = NULL;
     node->lexeme = lexeme;
+    node->type = type;
 
     return node;
 }
@@ -71,7 +110,7 @@ void add_child(NODE *parent, NODE *child)
     NODE **new_children_array = malloc(new_children_size);
     if (parent->children != NULL)
     {
-        memcpy(new_children_array, parent->children, new_children_size);
+        memcpy(new_children_array, parent->children, sizeof(NODE *) * parent->children_count);
         free(parent->children);
     }
 
@@ -80,23 +119,64 @@ void add_child(NODE *parent, NODE *child)
     parent->children[new_children_count - 1] = child;
 }
 
-void print_node(NODE *node)
+void print_node_label(NODE *node)
 {
-    if (node == NULL)
-        return;
-    if (node->lexeme == NULL)
-        return;
     LEXEME *lexeme = node->lexeme;
+
+    switch (node->type)
+    {
+    case TERNARY_EXPRESSION:
+        printf("?:");
+        return;
+    case FUNCTION_CALL:
+        printf("call %s", lexeme->literal_value.string);
+        return;
+    case VECTOR_ACCESS:
+        printf("[]");
+        return;
+    default:
+        break;
+    }
+
     switch (lexeme->type)
     {
-    case SPECIAL_CHAR:
-    case OPERATOR:
-    case IDENTIFIER:
-        printf("%s\n", lexeme->literal_value.string);
+    case LITERAL:
+        switch (lexeme->literal_type)
+        {
+        case INT:
+            printf("%d", lexeme->literal_value.int_v);
+            break;
+        case FLOAT:
+            printf("%f", lexeme->literal_value.float_v);
+            break;
+        case CHAR:
+            printf("%c", lexeme->literal_value.char_v);
+            break;
+        case STRING:
+            printf("%s", lexeme->literal_value.string);
+            break;
+        case BOOL:
+            if (lexeme->literal_value.bool_v == 0)
+                printf("false");
+            else
+                printf("true");
+            break;
+        default:
+            break;
+        }
         break;
-
+    case SPECIAL_CHAR:
+        printf("%c", lexeme->literal_value.char_v);
+        break;
+    case OPERATOR:
+        printf("%s", lexeme->literal_value.string);
+        break;
+    case KEYWORD:
+    case IDENTIFIER:
+        printf("%s", lexeme->literal_value.string);
+        break;
     default:
-        printf("TODO\n");
+        printf("DEU RUIM");
         break;
     }
 }

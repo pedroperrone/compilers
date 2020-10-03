@@ -20,4 +20,4 @@ tree.o: tree.c
 	gcc -c tree.c -Wall
 
 clean:
-	rm -f etapa3 lex.yy.* main.o parser.tab.h parser.tab.c parser.tab.o tree.o
+	rm -f etapa3 lex.yy.* main.o parser.tab.h parser.tab.c parser.tab.o tree.o parser.output

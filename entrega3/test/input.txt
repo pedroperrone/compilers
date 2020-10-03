@@ -1,0 +1,55 @@
+int ignored_var1, ignored_var2;
+
+int main() {
+  input var1;
+  output var2;
+  output "Hello world!"; // TODO: remove double quotes from lexeme string value
+  output 'F';
+
+  break;
+  continue;
+  return 1;
+
+  return true;
+  return true && false;
+  return 2.0 + 2.5e-2;
+  return true ? foo(1) : ?0;
+  return 3 + 4 - 5; // TODO: fix precedence
+  return ?1;
+  return var;
+  return var[1];
+
+  foo();
+  bar(1);
+  baz(3, 4);
+
+  int ignored_var1, ignored_var2, ignored_var3;
+
+  int ignored_var4, var1 <= 4, ignored_var5, var2 <= var1;
+
+  var1 = 4;
+  var2[0] = 2;
+
+  var1 << 4;
+  var2[0] >> 2;
+
+  if(true) {
+    var = 1;
+  };
+
+  if(true) {
+    x = true;
+  } else {
+    z = false;
+  };
+
+  for(i = 0: true: i = i+1) {
+    j = 2;
+  };
+
+  while(true) do {
+    k = 3;
+  };
+}
+
+int second_function() {}
