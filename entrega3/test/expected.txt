@@ -29,9 +29,9 @@
 [NODE] ?
 [NODE] 0
 [NODE] return
+[NODE] -
 [NODE] +
 [NODE] 3
-[NODE] -
 [NODE] 4
 [NODE] 5
 [NODE] return
@@ -103,6 +103,38 @@
 [NODE] k
 [NODE] 3
 [NODE] second_function
+[NODE] return
+[NODE] -
+[NODE] +
+[NODE] 1
+[NODE] 3
+[NODE] +
+[NODE] 2
+[NODE] 4
+[NODE] return
+[NODE] +
+[NODE] +
+[NODE] 1
+[NODE] -
+[NODE] 3
+[NODE] 2
+[NODE] 4
+[NODE] return
+[NODE] +
+[NODE] 4
+[NODE] *
+[NODE] 5
+[NODE] 6
+[NODE] return
+[NODE] +
+[NODE] 7
+[NODE] /
+[NODE] *
+[NODE] /
+[NODE] 8
+[NODE] 9
+[NODE] 10
+[NODE] 11
 [CONNECTION] main => input
 [CONNECTION] input => var1
 [CONNECTION] input => output
@@ -133,10 +165,10 @@
 [CONNECTION] ?: => ?
 [CONNECTION] ? => 0
 [CONNECTION] return => return
-[CONNECTION] return => +
+[CONNECTION] return => -
+[CONNECTION] - => +
 [CONNECTION] + => 3
-[CONNECTION] + => -
-[CONNECTION] - => 4
+[CONNECTION] + => 4
 [CONNECTION] - => 5
 [CONNECTION] return => return
 [CONNECTION] return => ?
@@ -207,3 +239,35 @@
 [CONNECTION] = => k
 [CONNECTION] = => 3
 [CONNECTION] main => second_function
+[CONNECTION] second_function => return
+[CONNECTION] return => -
+[CONNECTION] - => +
+[CONNECTION] + => 1
+[CONNECTION] + => 3
+[CONNECTION] - => +
+[CONNECTION] + => 2
+[CONNECTION] + => 4
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => +
+[CONNECTION] + => 1
+[CONNECTION] + => -
+[CONNECTION] - => 3
+[CONNECTION] - => 2
+[CONNECTION] + => 4
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => 4
+[CONNECTION] + => *
+[CONNECTION] * => 5
+[CONNECTION] * => 6
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => 7
+[CONNECTION] + => /
+[CONNECTION] / => *
+[CONNECTION] * => /
+[CONNECTION] / => 8
+[CONNECTION] / => 9
+[CONNECTION] * => 10
+[CONNECTION] / => 11
