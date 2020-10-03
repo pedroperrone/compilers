@@ -135,6 +135,11 @@
 [NODE] 9
 [NODE] 10
 [NODE] 11
+[NODE] return
+[NODE] +
+[NODE] 22
+[NODE] -
+[NODE] 10
 [CONNECTION] main => input
 [CONNECTION] input => var1
 [CONNECTION] input => output
@@ -271,3 +276,8 @@
 [CONNECTION] / => 9
 [CONNECTION] * => 10
 [CONNECTION] / => 11
+[CONNECTION] return => return
+[CONNECTION] return => +
+[CONNECTION] + => 22
+[CONNECTION] + => -
+[CONNECTION] - => 10
