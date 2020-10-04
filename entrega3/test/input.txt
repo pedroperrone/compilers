@@ -37,7 +37,7 @@ int main() {
     var = 1;
   };
 
-  if(true) {
+  if(some_var > 2) {
     x = true;
   } else {
     z = false;
