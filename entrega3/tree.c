@@ -17,9 +17,16 @@ void print_all_nodes(NODE *node)
     if (node == NULL)
         return;
 
+    /* Export format used for automated tests
     printf("[NODE] ");
     print_node_label(node);
     printf("\n");
+    */
+
+    printf("%p [label=\"", node);
+    print_node_label(node);
+    printf("\"];\n");
+
 
     if (node->children == NULL)
         return;
@@ -38,11 +45,15 @@ void print_all_connections(NODE *node)
         return;
     for (int i = 0; i < node->children_count; i++)
     {
+        /* Export format used for automated tests
         printf("[CONNECTION] ");
         print_node_label(node);
         printf(" => ");
         print_node_label(node->children[i]);
         printf("\n");
+        */
+
+        printf("%p, %p\n", node, node->children[i]);
 
         print_all_connections(node->children[i]);
     }
