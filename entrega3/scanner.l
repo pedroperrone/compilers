@@ -288,7 +288,8 @@ void create_literal_lexeme(LITERAL_TYPE type) {
     yylval.valor_lexico->literal_value.char_v = yytext[1];
     break;
   case STRING:
-    yylval.valor_lexico->literal_value.string = strdup(yytext);
+    yylval.valor_lexico->literal_value.string = strdup(yytext + sizeof(char));
+    yylval.valor_lexico->literal_value.string[strlen(yylval.valor_lexico->literal_value.string) - 1] = '\0';
     break;
   case BOOL:
     if(strcmp(yytext, "true")) {

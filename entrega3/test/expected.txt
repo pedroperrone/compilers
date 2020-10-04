@@ -4,7 +4,7 @@
 [NODE] output
 [NODE] var2
 [NODE] output
-[NODE] "Hello world!"
+[NODE] Hello world!
 [NODE] output
 [NODE] F
 [NODE] break
@@ -145,7 +145,7 @@
 [CONNECTION] input => output
 [CONNECTION] output => var2
 [CONNECTION] output => output
-[CONNECTION] output => "Hello world!"
+[CONNECTION] output => Hello world!
 [CONNECTION] output => output
 [CONNECTION] output => F
 [CONNECTION] output => break

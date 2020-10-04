@@ -3,7 +3,7 @@ int ignored_var1, ignored_var2;
 int main() {
   input var1;
   output var2;
-  output "Hello world!"; // TODO: remove double quotes from lexeme string value
+  output "Hello world!";
   output 'F';
 
   break;
@@ -14,7 +14,7 @@ int main() {
   return true && false;
   return 2.0 + 2.5e-2;
   return true ? foo(1) : ?0;
-  return 3 + 4 - 5; // TODO: fix precedence
+  return 3 + 4 - 5;
   return ?1;
   return var;
   return var[1];
