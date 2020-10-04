@@ -52,8 +52,9 @@ extern void* arvore;
 %token<valor_lexico> TK_IDENTIFICADOR
 %token<valor_lexico> TOKEN_ERRO
 
-%left<valor_lexico> ',' ';' '(' ')' '[' ']' '{' '}' '<' '>' '=' '!' '#' '.' '$' '?' ':' '|' '&' '%' '^'
-%left<valor_lexico> TK_OC_LE TK_OC_GE TK_OC_EQ TK_OC_NE TK_OC_AND TK_OC_OR TK_OC_SL TK_OC_SR TK_OC_FORWARD_PIPE TK_OC_BASH_PIPE
+%left<valor_lexico> TK_OC_AND TK_OC_OR
+%left<valor_lexico> TK_OC_LE TK_OC_GE TK_OC_EQ TK_OC_NE TK_OC_SL TK_OC_SR TK_OC_FORWARD_PIPE TK_OC_BASH_PIPE '<' '>'
+%left<valor_lexico> ',' ';' '(' ')' '[' ']' '{' '}' '=' '!' '#' '.' '$' '?' ':' '|' '&' '%' '^'
 %left<valor_lexico> '+' '-'
 %left<valor_lexico> '*' '/'
 

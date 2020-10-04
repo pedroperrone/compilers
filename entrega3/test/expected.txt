@@ -72,14 +72,22 @@
 [NODE] 0
 [NODE] 2
 [NODE] if
-[NODE] true
+[NODE] ==
+[NODE] +
+[NODE] 1
+[NODE] 2
+[NODE] my_var
 [NODE] =
 [NODE] var
 [NODE] 1
 [NODE] if
+[NODE] &&
 [NODE] >
 [NODE] some_var
 [NODE] 2
+[NODE] <
+[NODE] other_var
+[NODE] 7
 [NODE] =
 [NODE] x
 [NODE] true
@@ -215,14 +223,22 @@
 [CONNECTION] [] => 0
 [CONNECTION] >> => 2
 [CONNECTION] >> => if
-[CONNECTION] if => true
+[CONNECTION] if => ==
+[CONNECTION] == => +
+[CONNECTION] + => 1
+[CONNECTION] + => 2
+[CONNECTION] == => my_var
 [CONNECTION] if => =
 [CONNECTION] = => var
 [CONNECTION] = => 1
 [CONNECTION] if => if
-[CONNECTION] if => >
+[CONNECTION] if => &&
+[CONNECTION] && => >
 [CONNECTION] > => some_var
 [CONNECTION] > => 2
+[CONNECTION] && => <
+[CONNECTION] < => other_var
+[CONNECTION] < => 7
 [CONNECTION] if => =
 [CONNECTION] = => x
 [CONNECTION] = => true

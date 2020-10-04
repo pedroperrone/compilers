@@ -33,11 +33,11 @@ int main() {
   var1 << 4;
   var2[0] >> 2;
 
-  if(true) {
+  if(1 + 2 == my_var) {
     var = 1;
   };
 
-  if(some_var > 2) {
+  if(some_var > 2 && other_var < 7) {
     x = true;
   } else {
     z = false;
