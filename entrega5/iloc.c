@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+int current_register = 1;
+
 ILOC_INSTRUCTION_LIST *create_instruction_list(ILOC_INSTRUCTION *instruction) {
     ILOC_INSTRUCTION_LIST *instruction_list = malloc(sizeof(ILOC_INSTRUCTION_LIST));
     instruction_list->instruction = instruction;
@@ -77,4 +79,20 @@ void print_operand_list(ILOC_OPERAND_LIST *operands) {
         printf(", %s", operands->next->operand);
         operands = operands->next;
     }
+}
+
+char *itoa(int val, int base) {
+    static char buf[32] = {0};
+    int i = 30;
+    for (; val && i; --i, val /= base)
+        buf[i] = "0123456789abcdef"[val % base];
+    return &buf[i + 1];
+}
+
+char* generate_register() {
+    char *number_as_string = itoa(current_register, 10);
+    current_register++;
+    char register_name[11] = "r";
+    strcat(register_name, number_as_string);
+    return strdup(register_name);
 }

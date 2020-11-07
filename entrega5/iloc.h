@@ -37,3 +37,4 @@ void print_instruction_list(ILOC_INSTRUCTION_LIST *iloc_instruction_list);
 void print_instruction(ILOC_INSTRUCTION *instruction);
 void print_operator(ILOC_OPERATOR op);
 void print_operand_list(ILOC_OPERAND_LIST *operands);
+char *generate_register();

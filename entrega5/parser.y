@@ -147,19 +147,19 @@ init: start_scope {
         ILOC_INSTRUCTION *instruction;
 
         // Criando soma
-        source_operands = create_operand_list("r1");
-        add_operand("r2", source_operands);
+        source_operands = create_operand_list(generate_register());
+        add_operand(generate_register(), source_operands);
 
-        target_operands = create_operand_list("r3");
+        target_operands = create_operand_list(generate_register());
 
         instruction = create_instruction(ADD, source_operands, target_operands);
         instruction_list = create_instruction_list(instruction);
 
         // Criando multiplicação
-        source_operands = create_operand_list("r3");
-        add_operand("r4", source_operands);
+        source_operands = create_operand_list(target_operands->operand);
+        add_operand(generate_register(), source_operands);
 
-        target_operands = create_operand_list("r5");
+        target_operands = create_operand_list(generate_register());
 
         instruction = create_instruction(MULT, source_operands, target_operands);
         add_instruction(instruction, instruction_list);
