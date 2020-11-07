@@ -1,4 +1,5 @@
 #include "table.h"
+#include "iloc.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,6 +111,7 @@ void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_
     }
     TABLE_ENTRY *table_entry = malloc(sizeof(TABLE_ENTRY));
     table_entry->key = strdup(lexeme->raw_value);
+    table_entry->memory_address = -1;
     table_entry->nature = nature;
     table_entry->vector_size = vector_size;
     table_entry->type = type;
@@ -126,8 +128,14 @@ void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_
     table_stack->table = table_entry;
 }
 
+void add_global_var_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_TYPE type, FUNCTION_ARGUMENT *arguments, int vector_size) {
+    add_entry(table_stack, lexeme, nature, type, arguments, vector_size);
+    TABLE_ENTRY *entry = symbol_lookup(table_stack, lexeme->raw_value);
+    entry->memory_address = new_global_var_address();
+}
+
 int get_size(LITERAL_TYPE type, NATURE nature, char *value, int vector_size) {
-    switch (type)
+        switch (type)
         {
         case INT:
             return 4 * vector_size;
@@ -186,6 +194,7 @@ void print_entries(TABLE_ENTRY *table_entry) {
 
     print_entries(table_entry->next);
     printf("key: %s", table_entry->key);
+    printf(",\tmemory_address: %d", table_entry->memory_address);
     printf(",\tnature: ");
     print_nature(table_entry->nature);
     printf(",\ttype: ");

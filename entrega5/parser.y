@@ -169,7 +169,6 @@ init: start_scope {
 }
 
 destroy: end_scope {
-
 }
 
 start_scope: %empty {
@@ -177,6 +176,7 @@ start_scope: %empty {
 }
 
 end_scope: %empty {
+        print_table_stack(table_stack);
         table_stack = pop_table_stack(table_stack);
 }
 
@@ -228,7 +228,7 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
                     nature = VEC;
                 }
                 validate_variable_declarion($1);
-                add_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
+                add_global_var_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
                 free_lexeme($1);
         }
         | TK_IDENTIFICADOR optional_vector_definition_brackets ',' global_identifier_list {
@@ -239,7 +239,7 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
                     nature = VEC;
                 }
                 validate_variable_declarion($1);
-                add_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
+                add_global_var_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
                 free_lexeme($1);
         }
 

@@ -1,3 +1,5 @@
+int globa_var, other;
+
 int main() {
   return 1 + 2;
 }

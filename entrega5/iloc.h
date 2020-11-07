@@ -1,6 +1,8 @@
 #ifndef __iloc__
 #define __iloc__
 
+#define VAR_SIZE 4
+
 typedef enum iloc_operator
 {
     ADD,
@@ -38,3 +40,4 @@ void print_instruction(ILOC_INSTRUCTION *instruction);
 void print_operator(ILOC_OPERATOR op);
 void print_operand_list(ILOC_OPERAND_LIST *operands);
 char *generate_register();
+int new_global_var_address();

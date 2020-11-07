@@ -26,6 +26,7 @@ typedef struct function_call_context
 typedef struct table_entry
 {
     char *key;
+    int memory_address;
     NATURE nature;
     LITERAL_TYPE type;
     int vector_size;
@@ -54,6 +55,7 @@ FUNCTION_ARGUMENT *create_argument(FUNCTION_ARGUMENT *argument, LITERAL_TYPE typ
 FUNCTION_CALL_CONTEXT *push_function_call_context(FUNCTION_CALL_CONTEXT *context);
 FUNCTION_CALL_CONTEXT *pop_function_call_context(FUNCTION_CALL_CONTEXT *context);
 void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_TYPE type, FUNCTION_ARGUMENT *arguments, int vector_size);
+void add_global_var_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_TYPE type, FUNCTION_ARGUMENT *arguments, int vector_size);
 int get_size(LITERAL_TYPE type, NATURE nature, char *raw_value, int vector_size);
 void update_string_var_size_expression(TABLE_STACK *table_stack, LITERAL_TYPE type, char *key, int size);
 void update_string_var_size_identifier(TABLE_STACK *table_stack, LITERAL_TYPE type, char *key, char *identifier);

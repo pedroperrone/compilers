@@ -4,6 +4,7 @@
 #include <string.h>
 
 int current_register = 1;
+int rbss_displacement = 0;
 
 ILOC_INSTRUCTION_LIST *create_instruction_list(ILOC_INSTRUCTION *instruction) {
     ILOC_INSTRUCTION_LIST *instruction_list = malloc(sizeof(ILOC_INSTRUCTION_LIST));
@@ -95,4 +96,10 @@ char* generate_register() {
     char register_name[11] = "r";
     strcat(register_name, number_as_string);
     return strdup(register_name);
+}
+
+int new_global_var_address() {
+    int address = rbss_displacement;
+    rbss_displacement += VAR_SIZE;
+    return address;
 }
