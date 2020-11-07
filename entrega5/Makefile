@@ -1,5 +1,5 @@
-all: parser.tab.o lex.yy.o tree.o table.o main.o
-	gcc -o etapa5 parser.tab.o lex.yy.o tree.o table.o main.o -lfl
+all: parser.tab.o lex.yy.o tree.o table.o main.o iloc.o
+	gcc -o etapa5 parser.tab.o lex.yy.o tree.o table.o main.o iloc.o -lfl
 
 main.o: main.c
 	gcc -c main.c -Wall
@@ -22,5 +22,8 @@ tree.o: tree.c
 table.o: table.c
 	gcc -c table.c -Wall
 
+iloc.o: iloc.c
+	gcc -c iloc.c -Wall
+
 clean:
-	rm -f etapa5 lex.yy.* main.o parser.tab.h parser.tab.c parser.tab.o tree.o table.o parser.output
+	rm -f etapa5 lex.yy.* main.o parser.tab.h parser.tab.c parser.tab.o tree.o table.o iloc.o parser.output

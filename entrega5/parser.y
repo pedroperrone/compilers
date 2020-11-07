@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "table.h"
 #include "errors.h"
+#include "iloc.h"
 int yylex(void);
 void yyerror (char const *s);
 LITERAL_TYPE type_from_lexeme(LEXEME* lexeme);
@@ -32,6 +33,7 @@ TABLE_STACK *table_stack = NULL;
 FUNCTION_CALL_CONTEXT *function_call_context = NULL;
 LITERAL_TYPE current_declaration_type = NONE;
 LITERAL_TYPE current_function_type = NONE;
+ILOC_INSTRUCTION_LIST *instruction_list = NULL;
 %}
 
 %verbose
@@ -137,7 +139,38 @@ LITERAL_TYPE current_function_type = NONE;
 
 %%
 
-programa: start_scope start end_scope { arvore = $2; }
+programa: init start destroy { arvore = $2; }
+
+init: start_scope {
+        // Exemplo de como criar instruções
+        ILOC_OPERAND_LIST *source_operands, *target_operands;
+        ILOC_INSTRUCTION *instruction;
+
+        // Criando soma
+        source_operands = create_operand_list("r1");
+        add_operand("r2", source_operands);
+
+        target_operands = create_operand_list("r3");
+
+        instruction = create_instruction(ADD, source_operands, target_operands);
+        instruction_list = create_instruction_list(instruction);
+
+        // Criando multiplicação
+        source_operands = create_operand_list("r3");
+        add_operand("r4", source_operands);
+
+        target_operands = create_operand_list("r5");
+
+        instruction = create_instruction(MULT, source_operands, target_operands);
+        add_instruction(instruction, instruction_list);
+
+
+        print_instruction_list(instruction_list);
+}
+
+destroy: end_scope {
+
+}
 
 start_scope: %empty {
         table_stack = push_table_stack(table_stack);

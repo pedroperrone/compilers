@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./etapa5
+./etapa5 < input.txt
