@@ -88,6 +88,9 @@ void print_operator(ILOC_OPERATOR op) {
         case LOADI:
             printf("loadI");
             break;
+        case LOADAI:
+            printf("loadAI");
+            break;
         case STOREAI:
             printf("storeAI");
             break;
@@ -110,6 +113,9 @@ char *itoa(int val, int base) {
     int i = 30;
     for (; val && i; --i, val /= base)
         buf[i] = "0123456789abcdef"[val % base];
+    if (buf[i + 1] == '\0') {
+        return "0";
+    }
     return &buf[i + 1];
 }
 
@@ -165,5 +171,19 @@ ILOC_INSTRUCTION_LIST* generate_attribution(char *source, char *base_register, i
     add_operand(offset_string, target_operands);
 
     instruction = create_instruction(STOREAI, source_operands, target_operands);
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_load(char *base_register, int mem_offset, char *target) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+    char* offset_string = itoa(mem_offset, 10);
+
+    source_operands = create_operand_list(base_register);
+    add_operand(offset_string, source_operands);
+
+    target_operands = create_operand_list(target);
+
+    instruction = create_instruction(LOADAI, source_operands, target_operands);
     return create_instruction_list(instruction);
 }

@@ -236,7 +236,15 @@ identifier_access: TK_IDENTIFICADOR '[' expression ']' {
         add_child($$, create_node(table_stack, $1, NONE, $3->string_length));
         add_child($$, $3);
     }
-        | TK_IDENTIFICADOR { $$ = create_node(table_stack, $1, type_from_lexeme($1), 0); validate_access_to_variable($1); }
+        | TK_IDENTIFICADOR {
+            $$ = create_node(table_stack, $1, type_from_lexeme($1), 0);
+            validate_access_to_variable($1);
+            TABLE_ENTRY* entry = symbol_lookup(table_stack, $1->raw_value);
+            $$->local = generate_register();
+            if (entry->scope_type == GLOBAL) {
+                $$->code = generate_load("rbss", entry->memory_address, $$->local);
+            }
+    }
 
 global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
                 int nature;
