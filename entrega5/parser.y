@@ -237,7 +237,7 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
                 } else {
                     nature = VEC;
                 }
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_global_var_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
                 free_lexeme($1);
         }
@@ -248,7 +248,7 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
                 } else {
                     nature = VEC;
                 }
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_global_var_entry(table_stack, $1, nature, current_declaration_type, NULL, $2);
                 free_lexeme($1);
         }
