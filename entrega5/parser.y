@@ -239,11 +239,6 @@ identifier_access: TK_IDENTIFICADOR '[' expression ']' {
         | TK_IDENTIFICADOR {
             $$ = create_node(table_stack, $1, type_from_lexeme($1), 0);
             validate_access_to_variable($1);
-            TABLE_ENTRY* entry = symbol_lookup(table_stack, $1->raw_value);
-            $$->local = generate_register();
-            if (entry->scope_type == GLOBAL) {
-                $$->code = generate_load("rbss", entry->memory_address, $$->local);
-            }
     }
 
 global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
@@ -375,9 +370,11 @@ variable_attribution: identifier_access '=' expression {
                 TABLE_ENTRY* entry = symbol_lookup(table_stack, $1->lexeme->raw_value);
 
                 if (entry->scope_type == GLOBAL) {
-                    $$->code = generate_attribution($3->local, "rbss", entry->memory_address);
-                    $$->code = concat_instruction_list($3->code, $$->code);
+                    $$->code = generate_attribution_code($3->local, "rbss", entry->memory_address);
+                } else {
+                    $$->code = generate_attribution_code($3->local, "rfp", entry->memory_address);
                 }
+                $$->code = concat_instruction_list($3->code, $$->code);
         }
 
 control_flow: if { $$ = $1; }
@@ -452,7 +449,16 @@ expression: unary_expression { $$ = $1; }
         | ternary_expression { $$ = $1; }
 
 expression_term: expression_literal { $$ = $1; }
-        | identifier_access { $$ = $1; }
+        | identifier_access {
+            $$ = $1;
+            TABLE_ENTRY* entry = symbol_lookup(table_stack, $$->lexeme->raw_value);
+            $$->local = generate_register();
+            if (entry->scope_type == GLOBAL) {
+                $$->code = generate_load_code("rbss", entry->memory_address, $$->local);
+            } else {
+                $$->code = generate_load_code("rfp", entry->memory_address, $$->local);
+            }
+        }
         | function_call { $$ = $1;}
         | '(' expression ')' { $$ = $2; }
 

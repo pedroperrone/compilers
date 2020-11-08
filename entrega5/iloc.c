@@ -160,7 +160,7 @@ ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, 
     return create_instruction_list(instruction);
 }
 
-ILOC_INSTRUCTION_LIST* generate_attribution(char *source, char *base_register, int mem_offset) {
+ILOC_INSTRUCTION_LIST* generate_attribution_code(char *source, char *base_register, int mem_offset) {
     ILOC_OPERAND_LIST *source_operands, *target_operands;
     ILOC_INSTRUCTION *instruction;
     char* offset_string = itoa(mem_offset, 10);
@@ -174,7 +174,7 @@ ILOC_INSTRUCTION_LIST* generate_attribution(char *source, char *base_register, i
     return create_instruction_list(instruction);
 }
 
-ILOC_INSTRUCTION_LIST* generate_load(char *base_register, int mem_offset, char *target) {
+ILOC_INSTRUCTION_LIST* generate_load_code(char *base_register, int mem_offset, char *target) {
     ILOC_OPERAND_LIST *source_operands, *target_operands;
     ILOC_INSTRUCTION *instruction;
     char* offset_string = itoa(mem_offset, 10);

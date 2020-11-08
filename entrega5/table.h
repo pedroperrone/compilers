@@ -48,6 +48,7 @@ typedef struct table_entry
 typedef struct table_stack
 {
     SCOPE_TYPE scope_type;
+    int current_displacement;
     struct table_entry *table;
     struct table_stack *child;
 } TABLE_STACK;

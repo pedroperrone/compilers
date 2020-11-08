@@ -17,12 +17,21 @@ TABLE_STACK *push_table_stack(TABLE_STACK *table_stack, SCOPE_TYPE scope_type) {
     new_table_stack->child = table_stack;
     new_table_stack->scope_type = scope_type;
 
+    if (scope_type == UNNAMED) {
+        new_table_stack->current_displacement = table_stack->current_displacement;
+    } else {
+        new_table_stack->current_displacement = 0;
+    }
+
     return new_table_stack;
 }
 
 TABLE_STACK *pop_table_stack(TABLE_STACK *table_stack) {
     // print_table(table_stack);
     TABLE_STACK *child = table_stack->child;
+    if (table_stack->scope_type == UNNAMED) {
+        child->current_displacement = table_stack->current_displacement;
+    }
     free_table_stack(table_stack);
     return child;
 }
@@ -112,7 +121,6 @@ void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_
     }
     TABLE_ENTRY *table_entry = malloc(sizeof(TABLE_ENTRY));
     table_entry->key = strdup(lexeme->raw_value);
-    table_entry->memory_address = -1;
     table_entry->nature = nature;
     table_entry->vector_size = vector_size;
     table_entry->type = type;
@@ -127,6 +135,10 @@ void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_
         table_entry->size = get_size(type, nature, lexeme->raw_value, 1);
     }
 
+    table_entry->memory_address = table_stack->current_displacement;
+    if (nature == VAR) {
+        table_stack->current_displacement += table_entry->size;
+    }
     table_stack->table = table_entry;
 }
 
