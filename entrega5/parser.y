@@ -510,12 +510,59 @@ binary_expression: expression '+' expression {
         | expression '|' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
         | expression '&' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
         | expression '^' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
-        | expression '>' expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression '<' expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression TK_OC_LE expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression TK_OC_GE expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression TK_OC_EQ expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression TK_OC_NE expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
+        | expression '>' expression {
+                $$ = create_node(table_stack, $2, BOOL, 0);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(CMP_GT, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression '<' expression {
+                $$ = create_node(table_stack, $2, BOOL, 0);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(CMP_LT, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression TK_OC_LE expression {
+                $$ = create_node(table_stack, $2, BOOL, 0);
+                add_child($$, $1); add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(CMP_LE, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression TK_OC_GE expression {
+            $$ = create_node(table_stack, $2, BOOL, 0);
+            add_child($$, $1);
+            add_child($$, $3);
+            $$->local = generate_register();
+            $$->code = generate_binary_expression_code(CMP_GE, $1->local, $3->local, $$->local);
+            $$->code = concat_instruction_list($3->code, $$->code);
+            $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression TK_OC_EQ expression {
+            $$ = create_node(table_stack, $2, BOOL, 0);
+            add_child($$, $1);
+            add_child($$, $3);
+            $$->local = generate_register();
+            $$->code = generate_binary_expression_code(CMP_EQ, $1->local, $3->local, $$->local);
+            $$->code = concat_instruction_list($3->code, $$->code);
+            $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression TK_OC_NE expression {
+            $$ = create_node(table_stack, $2, BOOL, 0);
+            add_child($$, $1);
+            add_child($$, $3);
+            $$->local = generate_register();
+            $$->code = generate_binary_expression_code(CMP_NE, $1->local, $3->local, $$->local);
+            $$->code = concat_instruction_list($3->code, $$->code);
+            $$->code = concat_instruction_list($1->code, $$->code);
+        }
         | expression TK_OC_AND expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
         | expression TK_OC_OR expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
 

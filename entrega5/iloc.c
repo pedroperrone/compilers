@@ -66,9 +66,25 @@ void print_instruction_list(ILOC_INSTRUCTION_LIST *iloc_instruction_list) {
 void print_instruction(ILOC_INSTRUCTION *instruction) {
     print_operator(instruction->op);
     print_operand_list(instruction->source_operand_list);
-    printf(" =>");
+    print_arrow(instruction->op);
     print_operand_list(instruction->target_operand_list);
     printf("\n");
+}
+
+void print_arrow(ILOC_OPERATOR op) {
+    switch (op) {
+    case CMP_LE:
+    case CMP_LT:
+    case CMP_EQ:
+    case CMP_GE:
+    case CMP_GT:
+    case CMP_NE:
+        printf(" ->");
+        break;
+    default:
+        printf(" =>");
+        break;
+    }
 }
 
 void print_operator(ILOC_OPERATOR op) {
@@ -84,6 +100,24 @@ void print_operator(ILOC_OPERATOR op) {
             break;
         case DIV:
             printf("div");
+            break;
+        case CMP_LE:
+            printf("cmp_LE");
+            break;
+        case CMP_LT:
+            printf("cmp_LT");
+            break;
+        case CMP_EQ:
+            printf("cmp_EQ");
+            break;
+        case CMP_GE:
+            printf("cmp_GE");
+            break;
+        case CMP_GT:
+            printf("cmp_GT");
+            break;
+        case CMP_NE:
+            printf("cmp_NE");
             break;
         case LOADI:
             printf("loadI");

@@ -9,6 +9,12 @@ typedef enum iloc_operator
     SUB,
     MULT,
     DIV,
+    CMP_LT,
+    CMP_LE,
+    CMP_EQ,
+    CMP_GE,
+    CMP_GT,
+    CMP_NE,
 
     LOADI,
     LOADAI,
@@ -54,3 +60,4 @@ ILOC_INSTRUCTION_LIST* generate_literal_code(char *literal, char *local);
 ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, char *source1, char *source2, char *target);
 ILOC_INSTRUCTION_LIST *generate_attribution_code(char *source, char *base_register, int mem_offset);
 ILOC_INSTRUCTION_LIST *generate_load_code(char *base_register, int mem_offset, char *target);
+void print_arrow(ILOC_OPERATOR op);
