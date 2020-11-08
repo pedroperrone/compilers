@@ -316,11 +316,11 @@ local_identifier_list: TK_IDENTIFICADOR {
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 free_lexeme($1);
         }
-        | TK_IDENTIFICADOR ',' local_identifier_list {
-                $$ = $3;
-                validate_variable_declaration($1);
-                add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
-                free_lexeme($1);
+        | local_identifier_list ',' TK_IDENTIFICADOR {
+                $$ = $1;
+                validate_variable_declaration($3);
+                add_entry(table_stack, $3, VAR, current_declaration_type, NULL, -1);
+                free_lexeme($3);
         }
         | TK_IDENTIFICADOR TK_OC_LE TK_IDENTIFICADOR {
                 validate_variable_declaration($1);
@@ -331,15 +331,15 @@ local_identifier_list: TK_IDENTIFICADOR {
                 validate_variable_attribution(type_from_lexeme($1), type_from_lexeme($3), $1->raw_value);
                 update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->raw_value);
         }
-        | TK_IDENTIFICADOR TK_OC_LE TK_IDENTIFICADOR ',' local_identifier_list {
-                validate_variable_declaration($1);
-                add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
-                $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
-                add_child($$, create_node(table_stack, $1, type_from_lexeme($1), 0));
+        | local_identifier_list ',' TK_IDENTIFICADOR TK_OC_LE TK_IDENTIFICADOR {
+                validate_variable_declaration($3);
+                add_entry(table_stack, $3, VAR, current_declaration_type, NULL, -1);
+                $$ = create_node(table_stack, $4, type_from_lexeme($3), 0);
                 add_child($$, create_node(table_stack, $3, type_from_lexeme($3), 0));
-                add_child($$, $5);
-                validate_variable_attribution(type_from_lexeme($1), type_from_lexeme($3), $1->raw_value);
-                update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->raw_value);
+                add_child($$, create_node(table_stack, $5, type_from_lexeme($5), 0));
+                add_child($$, $1);
+                validate_variable_attribution(type_from_lexeme($3), type_from_lexeme($5), $3->raw_value);
+                update_string_var_size_identifier(table_stack, type_from_lexeme($3), $3->raw_value, $5->raw_value);
         }
         | TK_IDENTIFICADOR TK_OC_LE literal {
                 validate_variable_declaration($1);
@@ -350,14 +350,14 @@ local_identifier_list: TK_IDENTIFICADOR {
                 validate_variable_attribution(type_from_lexeme($1), $3->literal_type, $1->raw_value);
                 update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->lexeme->raw_value);
         }
-        | TK_IDENTIFICADOR TK_OC_LE literal ',' local_identifier_list {
-                validate_variable_declaration($1);
-                add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
-                $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
-                add_child($$, create_node(table_stack, $1, type_from_lexeme($1), $3->string_length));
-                add_child($$, $3); add_child($$, $5);
-                validate_variable_attribution(type_from_lexeme($1), $3->literal_type, $1->raw_value);
-                update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->lexeme->raw_value);
+        | local_identifier_list ',' TK_IDENTIFICADOR TK_OC_LE literal {
+                validate_variable_declaration($3);
+                add_entry(table_stack, $3, VAR, current_declaration_type, NULL, -1);
+                $$ = create_node(table_stack, $4, type_from_lexeme($3), 0);
+                add_child($$, create_node(table_stack, $3, type_from_lexeme($3), $5->string_length));
+                add_child($$, $5); add_child($$, $1);
+                validate_variable_attribution(type_from_lexeme($3), $5->literal_type, $3->raw_value);
+                update_string_var_size_identifier(table_stack, type_from_lexeme($3), $3->raw_value, $5->lexeme->raw_value);
         }
 
 variable_attribution: identifier_access '=' expression {
