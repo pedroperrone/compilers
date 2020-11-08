@@ -3,4 +3,6 @@ int globa_var, other;
 int main() {
   return 1 + (2 * 3);
   return 6 / 4;
+  globa_var = 1;
+  return 100;
 }

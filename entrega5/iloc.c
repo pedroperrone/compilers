@@ -73,20 +73,23 @@ void print_instruction(ILOC_INSTRUCTION *instruction) {
 
 void print_operator(ILOC_OPERATOR op) {
     switch(op) {
-        case ADD: 
+        case ADD:
             printf("add");
             break;
-        case SUB: 
+        case SUB:
             printf("sub");
             break;
-        case MULT: 
+        case MULT:
             printf("mult");
             break;
-        case DIV: 
+        case DIV:
             printf("div");
             break;
-        case LOADI: 
+        case LOADI:
             printf("loadI");
+            break;
+        case STOREAI:
+            printf("storeAI");
             break;
         default:
             printf("IMPLEMENTA O PRINT AE");
@@ -148,5 +151,19 @@ ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, 
 
     instruction = create_instruction(operation, source_operands, target_operands);
 
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_attribution(char *source, char *base_register, int mem_offset) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+    char* offset_string = itoa(mem_offset, 10);
+
+    source_operands = create_operand_list(source);
+
+    target_operands = create_operand_list(base_register);
+    add_operand(offset_string, target_operands);
+
+    instruction = create_instruction(STOREAI, source_operands, target_operands);
     return create_instruction_list(instruction);
 }

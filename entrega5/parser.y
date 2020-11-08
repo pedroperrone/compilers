@@ -365,6 +365,12 @@ variable_attribution: identifier_access '=' expression {
                 validate_variable_attribution($1->literal_type, $3->literal_type, "=");
                 update_string_var_size_expression(table_stack, $3->literal_type, $1->lexeme->raw_value, $3->string_length);
                 validate_string_size($1->literal_type, $3->string_length, $1->lexeme->raw_value);
+                TABLE_ENTRY* entry = symbol_lookup(table_stack, $1->lexeme->raw_value);
+
+                if (entry->scope_type == GLOBAL) {
+                    $$->code = generate_attribution($3->local, "rbss", entry->memory_address);
+                    $$->code = concat_instruction_list($3->code, $$->code);
+                }
         }
 
 control_flow: if { $$ = $1; }
