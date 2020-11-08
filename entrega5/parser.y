@@ -381,12 +381,31 @@ control_flow: if { $$ = $1; }
         | for { $$ = $1; }
         | while { $$ = $1; }
 
-if: TK_PR_IF '(' expression ')' start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $6); }
-        | TK_PR_IF '(' expression ')' start_scope_unnamed command_block TK_PR_ELSE start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0);
-                                                                               add_child($$, $3);
-                                                                               add_child($$, $6);
-                                                                               free_lexeme($7);
-                                                                               add_child($$, $9); }
+if: TK_PR_IF '(' expression ')' start_scope_unnamed command_block {
+                $$ = create_node(table_stack, $1, NONE, 0);
+                add_child($$, $3);
+                add_child($$, $6);
+
+                ILOC_INSTRUCTION* nop_before = create_instruction(NOP, NULL, NULL);
+                nop_before->label = generate_label();
+
+                ILOC_INSTRUCTION* nop_after = create_instruction(NOP, NULL, NULL);
+                nop_after->label = generate_label();
+
+
+                $$->code = generate_if_code($3->local, nop_before->label, nop_after->label);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                add_instruction(nop_before, $$->code);
+                $$->code = concat_instruction_list($$->code, $6->code);
+                add_instruction(nop_after, $$->code);
+        }
+        | TK_PR_IF '(' expression ')' start_scope_unnamed command_block TK_PR_ELSE start_scope_unnamed command_block {
+                $$ = create_node(table_stack, $1, NONE, 0);
+                add_child($$, $3);
+                add_child($$, $6);
+                free_lexeme($7);
+                add_child($$, $9);
+        }
 for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0);
                                                                                                     add_child($$, $3);
                                                                                                     free_lexeme($4);

@@ -4,6 +4,7 @@
 #include <string.h>
 
 int current_register = 1;
+int current_label = 1;
 int rbss_displacement = 0;
 
 ILOC_INSTRUCTION_LIST *create_instruction_list(ILOC_INSTRUCTION *instruction) {
@@ -35,6 +36,7 @@ ILOC_INSTRUCTION *create_instruction(ILOC_OPERATOR op ,ILOC_OPERAND_LIST *source
     instruction->op = op;
     instruction->source_operand_list = source_operands;
     instruction->target_operand_list = target_operands;
+    instruction->label = NULL;
 
     return instruction;
 }
@@ -64,9 +66,11 @@ void print_instruction_list(ILOC_INSTRUCTION_LIST *iloc_instruction_list) {
 }
 
 void print_instruction(ILOC_INSTRUCTION *instruction) {
+    print_label(instruction->label);
     print_operator(instruction->op);
     print_operand_list(instruction->source_operand_list);
-    print_arrow(instruction->op);
+    if (!(instruction->source_operand_list == NULL && instruction->target_operand_list == NULL))
+        print_arrow(instruction->op);
     print_operand_list(instruction->target_operand_list);
     printf("\n");
 }
@@ -79,12 +83,19 @@ void print_arrow(ILOC_OPERATOR op) {
     case CMP_GE:
     case CMP_GT:
     case CMP_NE:
+    case CBR:
         printf(" ->");
         break;
     default:
         printf(" =>");
         break;
     }
+}
+
+void print_label(char* label) {
+    if (label == NULL) return;
+
+    printf("%s: ", label);
 }
 
 void print_operator(ILOC_OPERATOR op) {
@@ -119,6 +130,9 @@ void print_operator(ILOC_OPERATOR op) {
         case CMP_NE:
             printf("cmp_NE");
             break;
+        case CBR:
+            printf("cbr");
+            break;
         case LOADI:
             printf("loadI");
             break;
@@ -128,12 +142,16 @@ void print_operator(ILOC_OPERATOR op) {
         case STOREAI:
             printf("storeAI");
             break;
+        case NOP:
+            printf("nop");
+            break;
         default:
             printf("IMPLEMENTA O PRINT AE");
     }
 }
 
 void print_operand_list(ILOC_OPERAND_LIST *operands) {
+    if (operands == NULL) return;
     printf(" %s", operands->operand);
 
     while (operands->next != NULL) {
@@ -159,6 +177,14 @@ char* generate_register() {
     char register_name[11] = "r";
     strcat(register_name, number_as_string);
     return strdup(register_name);
+}
+
+char* generate_label() {
+    char *number_as_string = itoa(current_label, 10);
+    current_label++;
+    char label_name[11] = "L";
+    strcat(label_name, number_as_string);
+    return strdup(label_name);
 }
 
 int new_global_var_address() {
@@ -219,5 +245,18 @@ ILOC_INSTRUCTION_LIST* generate_load_code(char *base_register, int mem_offset, c
     target_operands = create_operand_list(target);
 
     instruction = create_instruction(LOADAI, source_operands, target_operands);
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_if_code(char *condition_register, char *on_true_label, char *on_false_label) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+
+    source_operands = create_operand_list(condition_register);
+
+    target_operands = create_operand_list(on_true_label);
+    add_operand(on_false_label, target_operands);
+
+    instruction = create_instruction(CBR, source_operands, target_operands);
     return create_instruction_list(instruction);
 }
