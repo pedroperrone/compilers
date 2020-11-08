@@ -3,6 +3,7 @@
 
 #include "lexeme.h"
 #include "table.h"
+#include "iloc.h"
 
 typedef enum node_type
 {
@@ -20,6 +21,8 @@ typedef struct node
     int children_count;
     struct node **children;
     int string_length;
+    char *local;
+    struct iloc_instruction_list *code;
 } NODE;
 
 #endif

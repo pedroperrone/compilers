@@ -110,6 +110,8 @@ NODE *create_node_with_type(TABLE_STACK *table_stack, NODE_TYPE type, LEXEME *le
     node->lexeme = lexeme;
     node->type = type;
     node->literal_type = literal_type;
+    node->local = NULL;
+    node->code = NULL;
 
     if (lexeme->type == LITERAL) {
         node->string_length = strlen(lexeme->raw_value) - 2;

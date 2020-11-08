@@ -14,6 +14,17 @@ ILOC_INSTRUCTION_LIST *create_instruction_list(ILOC_INSTRUCTION *instruction) {
     return instruction_list;
 }
 
+ILOC_INSTRUCTION_LIST *concat_instruction_list(ILOC_INSTRUCTION_LIST *instruction_list1, ILOC_INSTRUCTION_LIST *instruction_list2) {
+    ILOC_INSTRUCTION_LIST *aux = instruction_list1;
+
+    if (instruction_list1 == NULL) return instruction_list2;
+
+    while (aux->next != NULL) aux = aux->next;
+    aux->next = instruction_list2;
+
+    return instruction_list1;
+}
+
 void add_instruction(ILOC_INSTRUCTION *instruction, ILOC_INSTRUCTION_LIST *instruction_list) {
     while (instruction_list->next != NULL) instruction_list = instruction_list->next;
     instruction_list->next = create_instruction_list(instruction);
@@ -65,11 +76,20 @@ void print_operator(ILOC_OPERATOR op) {
         case ADD: 
             printf("add");
             break;
+        case SUB: 
+            printf("sub");
+            break;
         case MULT: 
             printf("mult");
             break;
+        case DIV: 
+            printf("div");
+            break;
+        case LOADI: 
+            printf("loadI");
+            break;
         default:
-            printf("DEU RUIM");
+            printf("IMPLEMENTA O PRINT AE");
     }
 }
 
@@ -102,4 +122,31 @@ int new_global_var_address() {
     int address = rbss_displacement;
     rbss_displacement += VAR_SIZE;
     return address;
+}
+
+ILOC_INSTRUCTION_LIST* generate_literal_code(char *literal, char *local) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+
+    source_operands = create_operand_list(literal);
+
+    target_operands = create_operand_list(local);
+
+    instruction = create_instruction(LOADI, source_operands, target_operands);
+
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, char *source1, char *source2, char *target) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+
+    source_operands = create_operand_list(source1);
+    add_operand(source2, source_operands);
+
+    target_operands = create_operand_list(target);
+
+    instruction = create_instruction(operation, source_operands, target_operands);
+
+    return create_instruction_list(instruction);
 }

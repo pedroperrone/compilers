@@ -139,33 +139,33 @@ ILOC_INSTRUCTION_LIST *instruction_list = NULL;
 
 %%
 
-programa: init start destroy { arvore = $2; }
+programa: init start destroy { arvore = $2; print_instruction_list($2->code); }
 
 init: start_scope {
         // Exemplo de como criar instruções
-        ILOC_OPERAND_LIST *source_operands, *target_operands;
-        ILOC_INSTRUCTION *instruction;
+        // ILOC_OPERAND_LIST *source_operands, *target_operands;
+        // ILOC_INSTRUCTION *instruction;
 
-        // Criando soma
-        source_operands = create_operand_list(generate_register());
-        add_operand(generate_register(), source_operands);
+        // // Criando soma
+        // source_operands = create_operand_list(generate_register());
+        // add_operand(generate_register(), source_operands);
 
-        target_operands = create_operand_list(generate_register());
+        // target_operands = create_operand_list(generate_register());
 
-        instruction = create_instruction(ADD, source_operands, target_operands);
-        instruction_list = create_instruction_list(instruction);
+        // instruction = create_instruction(ADD, source_operands, target_operands);
+        // instruction_list = create_instruction_list(instruction);
 
-        // Criando multiplicação
-        source_operands = create_operand_list(target_operands->operand);
-        add_operand(generate_register(), source_operands);
+        // // Criando multiplicação
+        // source_operands = create_operand_list(target_operands->operand);
+        // add_operand(generate_register(), source_operands);
 
-        target_operands = create_operand_list(generate_register());
+        // target_operands = create_operand_list(generate_register());
 
-        instruction = create_instruction(MULT, source_operands, target_operands);
-        add_instruction(instruction, instruction_list);
+        // instruction = create_instruction(MULT, source_operands, target_operands);
+        // add_instruction(instruction, instruction_list);
 
 
-        print_instruction_list(instruction_list);
+        // print_instruction_list(instruction_list);
 }
 
 destroy: end_scope {
@@ -176,13 +176,18 @@ start_scope: %empty {
 }
 
 end_scope: %empty {
-        print_table_stack(table_stack);
+        // print_table_stack(table_stack);
         table_stack = pop_table_stack(table_stack);
 }
 
 start: global_variable start { $$ = $2; }
-        | function start { $$ = $1; add_child($$, $2); }
-        | %empty{ $$ = NULL; }
+        | function start {
+                $$ = $1;
+                add_child($$, $2);
+                if ($2 != NULL)
+                    $$->code = concat_instruction_list($$->code, $2->code);
+        }
+        | %empty { $$ = NULL; }
 
 
 optional_static: TK_PR_STATIC {}
@@ -197,7 +202,12 @@ type: TK_PR_INT { $$ = INT; current_declaration_type = $$; }
         | TK_PR_CHAR { $$ = CHAR; current_declaration_type = $$; }
         | TK_PR_STRING { $$ = STRING; current_declaration_type = $$; }
 
-literal: TK_LIT_INT { $$ = create_node(table_stack, $1, INT, 0); add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1); }
+literal: TK_LIT_INT {
+                $$ = create_node(table_stack, $1, INT, 0);
+                add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1);
+                $$->local = generate_register();
+                $$->code = generate_literal_code($$->lexeme->raw_value, $$->local);
+        }
         | TK_LIT_FLOAT { $$ = create_node(table_stack, $1, FLOAT, 0); add_entry(table_stack, $$->lexeme, LIT, FLOAT, NULL, -1); }
         | TK_LIT_TRUE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }
         | TK_LIT_FALSE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }
@@ -246,7 +256,11 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
 
 /* === Function === */
 
-function: function_header function_body { $$ = $1; add_child($$, $2); }
+function: function_header function_body {
+                $$ = $1;
+                add_child($$, $2);
+                $$->code = $2->code;
+        }
 
 function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')' {
         add_entry(table_stack, $3, FUNC, $2, $5, -1);
@@ -261,7 +275,16 @@ parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tai
 
 function_body: command_block { $$ = $1; }
 command_block: start_scope '{' command_list '}' end_scope { $$ = $3; }
-command_list: command ';' command_list { if($1 == NULL) $$ = $3; else {$$ = $1; add_child($$, $3);} }
+command_list: command ';' command_list {
+                if ($1 == NULL) {
+                    $$ = $3;
+                } else {
+                    $$ = $1;
+                    add_child($$, $3);
+                    if ($3 != NULL)
+                        $$->code = concat_instruction_list($$->code, $3->code);
+                }
+        }
         | %empty { $$ = NULL; }
 
 
@@ -368,6 +391,7 @@ return: TK_PR_RETURN expression {
                 $$ = create_node(table_stack, $1, $2->literal_type, $2->string_length);
                 add_child($$, $2);
                 validate_function_return_type($2->literal_type);
+                $$->code = $2->code;
         }
 break: TK_PR_BREAK { $$ = create_node(table_stack, $1, NONE, 0); }
 continue: TK_PR_CONTINUE { $$ = create_node(table_stack, $1, NONE, 0); }
@@ -419,10 +443,42 @@ unary_expression: '+' expression { $$ = create_node(table_stack, $1, $2->literal
         | '?' expression { $$ = create_node(table_stack, $1, $2->literal_type, $2->string_length); add_child($$, $2); }
         | '#' expression { $$ = create_node(table_stack, $1, $2->literal_type, $2->string_length); add_child($$, $2); }
 
-binary_expression: expression '+' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
-        | expression '-' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
-        | expression '*' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
-        | expression '/' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
+binary_expression: expression '+' expression {
+                $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(ADD, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression '-' expression {
+                $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(SUB, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression '*' expression {
+                $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(MULT, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
+        | expression '/' expression {
+                $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length);
+                add_child($$, $1);
+                add_child($$, $3);
+                $$->local = generate_register();
+                $$->code = generate_binary_expression_code(DIV, $1->local, $3->local, $$->local);
+                $$->code = concat_instruction_list($3->code, $$->code);
+                $$->code = concat_instruction_list($1->code, $$->code);
+        }
         | expression '%' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
         | expression '|' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
         | expression '&' expression { $$ = create_node(table_stack, $2, infer_type($1->literal_type, $3->literal_type, $2->raw_value), $1->string_length + $3->string_length); add_child($$, $1); add_child($$, $3); }
@@ -442,7 +498,12 @@ ternary_expression: expression_term '?' expression ':' expression { $$ = create_
                                                                     free_lexeme($4);
                                                                     add_child($$, $5); }
 
-expression_literal: TK_LIT_INT { $$ = create_node(table_stack, $1, INT, 0); add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1); }
+expression_literal: TK_LIT_INT {
+                $$ = create_node(table_stack, $1, INT, 0);
+                add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1);
+                $$->local = generate_register();
+                $$->code = generate_literal_code($$->lexeme->raw_value, $$->local);
+        }
         | TK_LIT_FLOAT { $$ = create_node(table_stack, $1, FLOAT, 0); add_entry(table_stack, $$->lexeme, LIT, FLOAT, NULL, -1); }
         | TK_LIT_TRUE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }
         | TK_LIT_FALSE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }
