@@ -16,7 +16,7 @@ void validate_vector_access(LEXEME* lexeme);
 void validate_function_call(LEXEME* lexeme);
 void validate_arguments(FUNCTION_ARGUMENT *arguments_def, FUNCTION_ARGUMENT *arguments_call, char* token);
 void validate_variable_attribution(LITERAL_TYPE expected_value, LITERAL_TYPE assigned_value_type, char* token);
-void validate_variable_declarion(LEXEME* lexeme);
+void validate_variable_declaration(LEXEME* lexeme);
 void validate_function_return_type(LITERAL_TYPE type);
 void validate_input_identifier(LEXEME* lexeme);
 void validate_output_identifier(LEXEME* lexeme);
@@ -223,10 +223,10 @@ optional_vector_definition_brackets: '[' TK_LIT_INT ']' { $$ = $2->literal_value
         | %empty { $$ = -1; }
 
 identifier_access: TK_IDENTIFICADOR '[' expression ']' {
+        validate_vector_access($1);
         $$ = create_node_with_type(table_stack, VECTOR_ACCESS, $2, $3->literal_type, 0);
         add_child($$, create_node(table_stack, $1, NONE, $3->string_length));
         add_child($$, $3);
-        validate_vector_access($1);
     }
         | TK_IDENTIFICADOR { $$ = create_node(table_stack, $1, type_from_lexeme($1), 0); validate_access_to_variable($1); }
 
@@ -302,18 +302,18 @@ command: variable_declaration { $$ = $1; }
 variable_declaration: optional_static optional_const type local_identifier_list { $$ = $4; }
 local_identifier_list: TK_IDENTIFICADOR {
                 $$ = NULL;
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 free_lexeme($1);
         }
         | TK_IDENTIFICADOR ',' local_identifier_list {
                 $$ = $3;
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 free_lexeme($1);
         }
         | TK_IDENTIFICADOR TK_OC_LE TK_IDENTIFICADOR {
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
                 add_child($$, create_node(table_stack, $1, type_from_lexeme($1), 0));
@@ -322,7 +322,7 @@ local_identifier_list: TK_IDENTIFICADOR {
                 update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->raw_value);
         }
         | TK_IDENTIFICADOR TK_OC_LE TK_IDENTIFICADOR ',' local_identifier_list {
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
                 add_child($$, create_node(table_stack, $1, type_from_lexeme($1), 0));
@@ -332,7 +332,7 @@ local_identifier_list: TK_IDENTIFICADOR {
                 update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->raw_value);
         }
         | TK_IDENTIFICADOR TK_OC_LE literal {
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
                 add_child($$, create_node(table_stack, $1, type_from_lexeme($1), $3->string_length));
@@ -341,7 +341,7 @@ local_identifier_list: TK_IDENTIFICADOR {
                 update_string_var_size_identifier(table_stack, type_from_lexeme($1), $1->raw_value, $3->lexeme->raw_value);
         }
         | TK_IDENTIFICADOR TK_OC_LE literal ',' local_identifier_list {
-                validate_variable_declarion($1);
+                validate_variable_declaration($1);
                 add_entry(table_stack, $1, VAR, current_declaration_type, NULL, -1);
                 $$ = create_node(table_stack, $2, type_from_lexeme($1), 0);
                 add_child($$, create_node(table_stack, $1, type_from_lexeme($1), $3->string_length));
@@ -709,7 +709,7 @@ void validate_variable_attribution(LITERAL_TYPE expected_value, LITERAL_TYPE ass
     }
 }
 
-void validate_variable_declarion(LEXEME* lexeme) {
+void validate_variable_declaration(LEXEME* lexeme) {
     TABLE_ENTRY* entry = symbol_lookup(table_stack, lexeme->raw_value);
 
     if (entry != NULL) {
