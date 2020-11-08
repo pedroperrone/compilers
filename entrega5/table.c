@@ -12,9 +12,10 @@ TABLE_STACK *create_table_stack() {
     return table_stack;
 }
 
-TABLE_STACK *push_table_stack(TABLE_STACK *table_stack) {
+TABLE_STACK *push_table_stack(TABLE_STACK *table_stack, SCOPE_TYPE scope_type) {
     TABLE_STACK *new_table_stack = create_table_stack();
     new_table_stack->child = table_stack;
+    new_table_stack->scope_type = scope_type;
 
     return new_table_stack;
 }
@@ -118,6 +119,7 @@ void add_entry(TABLE_STACK *table_stack, LEXEME *lexeme, NATURE nature, LITERAL_
     table_entry->next = table_stack->table;
     table_entry->value = NULL;
     table_entry->arguments = arguments;
+    table_entry->scope_type = table_stack->scope_type;
 
     if (vector_size >= 0) {
         table_entry->size = get_size(type, nature, lexeme->raw_value, vector_size);

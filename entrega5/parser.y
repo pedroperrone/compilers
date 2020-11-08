@@ -141,7 +141,7 @@ ILOC_INSTRUCTION_LIST *instruction_list = NULL;
 
 programa: init start destroy { arvore = $2; print_instruction_list($2->code); }
 
-init: start_scope {
+init: start_scope_global {
         // Exemplo de como criar instruções
         // ILOC_OPERAND_LIST *source_operands, *target_operands;
         // ILOC_INSTRUCTION *instruction;
@@ -171,8 +171,16 @@ init: start_scope {
 destroy: end_scope {
 }
 
-start_scope: %empty {
-        table_stack = push_table_stack(table_stack);
+start_scope_global: %empty {
+        table_stack = push_table_stack(table_stack, GLOBAL);
+}
+
+start_scope_named: %empty {
+        table_stack = push_table_stack(table_stack, NAMED);
+}
+
+start_scope_unnamed: %empty {
+        table_stack = push_table_stack(table_stack, UNNAMED);
 }
 
 end_scope: %empty {
@@ -273,8 +281,8 @@ parameter_list: optional_const type TK_IDENTIFICADOR parameter_list_tail { $$ = 
 parameter_list_tail: ',' optional_const type TK_IDENTIFICADOR parameter_list_tail { $$ = create_argument($5, $3); free_lexeme($4); }
         | %empty { $$ = NULL; }
 
-function_body: command_block { $$ = $1; }
-command_block: start_scope '{' command_list '}' end_scope { $$ = $3; }
+function_body: start_scope_named command_block { $$ = $2; }
+command_block: '{' command_list '}' end_scope { $$ = $2; }
 command_list: command ';' command_list {
                 if ($1 == NULL) {
                     $$ = $3;
@@ -295,7 +303,7 @@ command: variable_declaration { $$ = $1; }
         | control_flow { $$ = $1; }
         | io_operation { $$ = $1; }
         | return_operation { $$ = $1; }
-        | command_block { $$ = $1; }
+        | start_scope_unnamed command_block { $$ = $2; }
         | function_call { $$ = $1; }
         | shift_operation { $$ = $1; }
 
@@ -363,20 +371,20 @@ control_flow: if { $$ = $1; }
         | for { $$ = $1; }
         | while { $$ = $1; }
 
-if: TK_PR_IF '(' expression ')' command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $5); }
-        | TK_PR_IF '(' expression ')' command_block TK_PR_ELSE command_block { $$ = create_node(table_stack, $1, NONE, 0);
+if: TK_PR_IF '(' expression ')' start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $6); }
+        | TK_PR_IF '(' expression ')' start_scope_unnamed command_block TK_PR_ELSE start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0);
                                                                                add_child($$, $3);
-                                                                               add_child($$, $5);
-                                                                               free_lexeme($6);
-                                                                               add_child($$, $7); }
-for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' command_block { $$ = create_node(table_stack, $1, NONE, 0);
+                                                                               add_child($$, $6);
+                                                                               free_lexeme($7);
+                                                                               add_child($$, $9); }
+for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0);
                                                                                                     add_child($$, $3);
                                                                                                     free_lexeme($4);
                                                                                                     add_child($$, $5);
                                                                                                     free_lexeme($6);
                                                                                                     add_child($$, $7);
-                                                                                                    add_child($$, $9); }
-while: TK_PR_WHILE '(' expression ')' TK_PR_DO command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $6); }
+                                                                                                    add_child($$, $10); }
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $7); }
 
 io_operation: input { $$ = $1; }
         | output { $$ = $1; }
@@ -710,7 +718,7 @@ void validate_variable_attribution(LITERAL_TYPE expected_value, LITERAL_TYPE ass
 }
 
 void validate_variable_declaration(LEXEME* lexeme) {
-    TABLE_ENTRY* entry = symbol_lookup(table_stack, lexeme->raw_value);
+    TABLE_ENTRY* entry = symbol_lookup_single_scope(table_stack, lexeme->raw_value);
 
     if (entry != NULL) {
         throw_error_for_token(ERR_DECLARED, lexeme->raw_value);

@@ -11,6 +11,13 @@ typedef enum nature
     VEC
 } NATURE;
 
+typedef enum scope_type
+{
+    GLOBAL,
+    NAMED,
+    UNNAMED
+} SCOPE_TYPE;
+
 typedef struct function_argument
 {
     LITERAL_TYPE type;
@@ -35,10 +42,12 @@ typedef struct table_entry
     char *value;
     FUNCTION_ARGUMENT *arguments;
     struct table_entry *next;
+    SCOPE_TYPE scope_type;
 } TABLE_ENTRY;
 
 typedef struct table_stack
 {
+    SCOPE_TYPE scope_type;
     struct table_entry *table;
     struct table_stack *child;
 } TABLE_STACK;
@@ -46,7 +55,7 @@ typedef struct table_stack
 #endif
 
 TABLE_STACK *create_table_stack();
-TABLE_STACK *push_table_stack(TABLE_STACK *table_stack);
+TABLE_STACK *push_table_stack(TABLE_STACK *table_stack, SCOPE_TYPE scope_type);
 TABLE_STACK *pop_table_stack(TABLE_STACK *table_stack);
 TABLE_ENTRY *symbol_lookup_single_scope(TABLE_STACK *table_stack, char *key);
 TABLE_ENTRY *symbol_lookup(TABLE_STACK *table_stack, char *key);
