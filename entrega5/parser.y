@@ -142,15 +142,13 @@ char *main_label = NULL;
 %%
 
 programa: init start destroy {
-    int data_segment_address = count_instructions($2->code) + 6; // 5 instruções adicionadas + 1
+    int data_segment_address = count_instructions($2->code) + 6; // 4 instruções adicionadas + 1
 
     ILOC_INSTRUCTION_LIST *init_rfp = generate_loadi_code("1024", "rfp");
     ILOC_INSTRUCTION_LIST *init_rsp = generate_loadi_code("1024", "rsp");
     ILOC_INSTRUCTION_LIST *init_rbss = generate_loadi_code(itoa(data_segment_address, 10), "rbss");
     ILOC_INSTRUCTION_LIST *jump_to_main = generate_jumpi_code(main_label);
-    ILOC_INSTRUCTION_LIST *halt = generate_halt_code();
 
-    $2->code = concat_instruction_list(halt, $2->code);
     $2->code = concat_instruction_list(jump_to_main, $2->code);
     $2->code = concat_instruction_list(init_rbss, $2->code);
     $2->code = concat_instruction_list(init_rsp, $2->code);
@@ -265,6 +263,13 @@ function: function_header function_body {
                 $$ = $1;
                 add_child($$, $2);
                 $$->code = concat_instruction_list($1->code, $2->code);
+
+                char *function_name = $$->lexeme->raw_value;
+
+                if (strcmp(function_name, "main") == 0) {
+                    ILOC_INSTRUCTION_LIST *halt = generate_halt_code();
+                    $$->code = concat_instruction_list($$->code, halt);
+                }
         }
 
 function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')' {
