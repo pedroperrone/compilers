@@ -432,13 +432,35 @@ if: TK_PR_IF '(' expression ')' start_scope_unnamed command_block {
                 $$->code = concat_instruction_list($$->code, $9->code);
                 add_instruction(nop_after, $$->code);
         }
-for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0);
-                                                                                                    add_child($$, $3);
-                                                                                                    free_lexeme($4);
-                                                                                                    add_child($$, $5);
-                                                                                                    free_lexeme($6);
-                                                                                                    add_child($$, $7);
-                                                                                                    add_child($$, $10); }
+for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution ')' start_scope_unnamed command_block {
+                $$ = create_node(table_stack, $1, NONE, 0);
+                add_child($$, $3);
+                free_lexeme($4);
+                add_child($$, $5);
+                free_lexeme($6);
+                add_child($$, $7);
+                add_child($$, $10);
+
+                ILOC_INSTRUCTION* nop_condition = create_instruction(NOP, NULL, NULL);
+                nop_condition->label = generate_label();
+
+                ILOC_INSTRUCTION* nop_block = create_instruction(NOP, NULL, NULL);
+                nop_block->label = generate_label();
+
+                ILOC_INSTRUCTION* nop_after = create_instruction(NOP, NULL, NULL);
+                nop_after->label = generate_label();
+
+                $$->code = $3->code;
+                add_instruction(nop_condition, $$->code);
+                $$->code = concat_instruction_list($$->code, $5->code);
+                $$->code = concat_instruction_list($$->code, generate_if_code($5->local, nop_block->label, nop_after->label));
+                add_instruction(nop_block, $$->code);
+                $$->code = concat_instruction_list($$->code, $10->code);
+                $$->code = concat_instruction_list($$->code, $7->code);
+                $$->code = concat_instruction_list($$->code, generate_jumpi_code(nop_condition->label));
+                add_instruction(nop_after, $$->code);
+        }
+
 while: TK_PR_WHILE '(' expression ')' TK_PR_DO start_scope_unnamed command_block {
                 $$ = create_node(table_stack, $1, NONE, 0);
                 add_child($$, $3);
