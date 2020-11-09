@@ -23,6 +23,7 @@ typedef enum iloc_operator
     LOADAI,
     STOREAI,
 
+    HALT,
     NOP
 } ILOC_OPERATOR;
 
@@ -58,10 +59,12 @@ void print_instruction_list(ILOC_INSTRUCTION_LIST *iloc_instruction_list);
 void print_instruction(ILOC_INSTRUCTION *instruction);
 void print_operator(ILOC_OPERATOR op);
 void print_operand_list(ILOC_OPERAND_LIST *operands);
+char *itoa(int val, int base);
 char *generate_register();
 char *generate_label();
 int new_global_var_address();
-ILOC_INSTRUCTION_LIST* generate_literal_code(char *literal, char *local);
+int count_instructions(ILOC_INSTRUCTION_LIST *instruction_list);
+ILOC_INSTRUCTION_LIST* generate_loadi_code(char *literal, char *reg);
 ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, char *source1, char *source2, char *target);
 ILOC_INSTRUCTION_LIST *generate_attribution_code(char *source, char *base_register, int mem_offset);
 ILOC_INSTRUCTION_LIST *generate_load_code(char *base_register, int mem_offset, char *target);
@@ -70,3 +73,4 @@ ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label);
 void print_arrow(ILOC_OPERATOR op);
 void print_label(char *label);
 ILOC_INSTRUCTION_LIST* generate_labeled_nop_code(char *label);
+ILOC_INSTRUCTION_LIST* generate_halt_code();

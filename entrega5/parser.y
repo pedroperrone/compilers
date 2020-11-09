@@ -141,33 +141,26 @@ char *main_label = NULL;
 
 %%
 
-programa: init start destroy { arvore = $2; print_instruction_list($2->code); }
+programa: init start destroy {
+    int data_segment_address = count_instructions($2->code) + 6; // 5 instruções adicionadas + 1
+
+    ILOC_INSTRUCTION_LIST *init_rfp = generate_loadi_code("1024", "rfp");
+    ILOC_INSTRUCTION_LIST *init_rsp = generate_loadi_code("1024", "rsp");
+    ILOC_INSTRUCTION_LIST *init_rbss = generate_loadi_code(itoa(data_segment_address, 10), "rbss");
+    ILOC_INSTRUCTION_LIST *jump_to_main = generate_jumpi_code(main_label);
+    ILOC_INSTRUCTION_LIST *halt = generate_halt_code();
+
+    $2->code = concat_instruction_list(halt, $2->code);
+    $2->code = concat_instruction_list(jump_to_main, $2->code);
+    $2->code = concat_instruction_list(init_rbss, $2->code);
+    $2->code = concat_instruction_list(init_rsp, $2->code);
+    $2->code = concat_instruction_list(init_rfp, $2->code);
+
+    print_instruction_list($2->code);
+    arvore = $2;
+}
 
 init: start_scope_global {
-        // Exemplo de como criar instruções
-        // ILOC_OPERAND_LIST *source_operands, *target_operands;
-        // ILOC_INSTRUCTION *instruction;
-
-        // // Criando soma
-        // source_operands = create_operand_list(generate_register());
-        // add_operand(generate_register(), source_operands);
-
-        // target_operands = create_operand_list(generate_register());
-
-        // instruction = create_instruction(ADD, source_operands, target_operands);
-        // instruction_list = create_instruction_list(instruction);
-
-        // // Criando multiplicação
-        // source_operands = create_operand_list(target_operands->operand);
-        // add_operand(generate_register(), source_operands);
-
-        // target_operands = create_operand_list(generate_register());
-
-        // instruction = create_instruction(MULT, source_operands, target_operands);
-        // add_instruction(instruction, instruction_list);
-
-
-        // print_instruction_list(instruction_list);
 }
 
 destroy: end_scope {
@@ -216,7 +209,7 @@ literal: TK_LIT_INT {
                 $$ = create_node(table_stack, $1, INT, 0);
                 add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1);
                 $$->local = generate_register();
-                $$->code = generate_literal_code($$->lexeme->raw_value, $$->local);
+                $$->code = generate_loadi_code($$->lexeme->raw_value, $$->local);
         }
         | TK_LIT_FLOAT { $$ = create_node(table_stack, $1, FLOAT, 0); add_entry(table_stack, $$->lexeme, LIT, FLOAT, NULL, -1); }
         | TK_LIT_TRUE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }
@@ -664,7 +657,7 @@ expression_literal: TK_LIT_INT {
                 $$ = create_node(table_stack, $1, INT, 0);
                 add_entry(table_stack, $$->lexeme, LIT, INT, NULL, -1);
                 $$->local = generate_register();
-                $$->code = generate_literal_code($$->lexeme->raw_value, $$->local);
+                $$->code = generate_loadi_code($$->lexeme->raw_value, $$->local);
         }
         | TK_LIT_FLOAT { $$ = create_node(table_stack, $1, FLOAT, 0); add_entry(table_stack, $$->lexeme, LIT, FLOAT, NULL, -1); }
         | TK_LIT_TRUE { $$ = create_node(table_stack, $1, BOOL, 0); add_entry(table_stack, $$->lexeme, LIT, BOOL, NULL, -1); }

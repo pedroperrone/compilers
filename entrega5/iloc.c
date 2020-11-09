@@ -146,6 +146,9 @@ void print_operator(ILOC_OPERATOR op) {
         case STOREAI:
             printf("storeAI");
             break;
+        case HALT:
+            printf("halt");
+            break;
         case NOP:
             printf("nop");
             break;
@@ -197,13 +200,19 @@ int new_global_var_address() {
     return address;
 }
 
-ILOC_INSTRUCTION_LIST* generate_literal_code(char *literal, char *local) {
+int count_instructions(ILOC_INSTRUCTION_LIST *instruction_list) {
+    if (instruction_list == NULL) return 0;
+
+    return 1 + count_instructions(instruction_list->next);
+}
+
+ILOC_INSTRUCTION_LIST* generate_loadi_code(char *literal, char *reg) {
     ILOC_OPERAND_LIST *source_operands, *target_operands;
     ILOC_INSTRUCTION *instruction;
 
     source_operands = create_operand_list(literal);
 
-    target_operands = create_operand_list(local);
+    target_operands = create_operand_list(reg);
 
     instruction = create_instruction(LOADI, source_operands, target_operands);
 
@@ -277,11 +286,17 @@ ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label) {
     return create_instruction_list(instruction);
 }
 
-
 ILOC_INSTRUCTION_LIST* generate_labeled_nop_code(char *label) {
     ILOC_INSTRUCTION *instruction;
 
     instruction = create_instruction(NOP, NULL, NULL);
     instruction->label = label;
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_halt_code() {
+    ILOC_INSTRUCTION *instruction;
+
+    instruction = create_instruction(HALT, NULL, NULL);
     return create_instruction_list(instruction);
 }
