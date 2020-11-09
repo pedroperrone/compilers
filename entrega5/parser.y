@@ -431,7 +431,28 @@ for: TK_PR_FOR '(' variable_attribution ':' expression ':' variable_attribution 
                                                                                                     free_lexeme($6);
                                                                                                     add_child($$, $7);
                                                                                                     add_child($$, $10); }
-while: TK_PR_WHILE '(' expression ')' TK_PR_DO start_scope_unnamed command_block { $$ = create_node(table_stack, $1, NONE, 0); add_child($$, $3); add_child($$, $7); }
+while: TK_PR_WHILE '(' expression ')' TK_PR_DO start_scope_unnamed command_block {
+                $$ = create_node(table_stack, $1, NONE, 0);
+                add_child($$, $3);
+                add_child($$, $7);
+
+                ILOC_INSTRUCTION* nop_condition = create_instruction(NOP, NULL, NULL);
+                nop_condition->label = generate_label();
+
+                ILOC_INSTRUCTION* nop_block = create_instruction(NOP, NULL, NULL);
+                nop_block->label = generate_label();
+
+                ILOC_INSTRUCTION* nop_after = create_instruction(NOP, NULL, NULL);
+                nop_after->label = generate_label();
+
+                $$->code = create_instruction_list(nop_condition);
+                $$->code = concat_instruction_list($$->code, $3->code);
+                $$->code = concat_instruction_list($$->code, generate_if_code($3->local, nop_block->label, nop_after->label));
+                add_instruction(nop_block, $$->code);
+                $$->code = concat_instruction_list($$->code, $7->code);
+                $$->code = concat_instruction_list($$->code, generate_jumpi_code(nop_condition->label));
+                add_instruction(nop_after, $$->code);
+        }
 
 io_operation: input { $$ = $1; }
         | output { $$ = $1; }
