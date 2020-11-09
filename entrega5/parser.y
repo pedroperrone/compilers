@@ -644,8 +644,57 @@ binary_expression: expression '+' expression {
             $$->code = concat_instruction_list($3->code, $$->code);
             $$->code = concat_instruction_list($1->code, $$->code);
         }
-        | expression TK_OC_AND expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
-        | expression TK_OC_OR expression { $$ = create_node(table_stack, $2, BOOL, 0); add_child($$, $1); add_child($$, $3); }
+        | expression TK_OC_AND expression {
+            $$ = create_node(table_stack, $2, BOOL, 0);
+            add_child($$, $1);
+            add_child($$, $3);
+
+            ILOC_INSTRUCTION* nop_before = create_instruction(NOP, NULL, NULL);
+            nop_before->label = generate_label();
+
+            ILOC_INSTRUCTION* nop_after = create_instruction(NOP, NULL, NULL);
+            nop_after->label = generate_label();
+
+            ILOC_INSTRUCTION* nop_end = create_instruction(NOP, NULL, NULL);
+            nop_end->label = generate_label();
+
+            $$->local = generate_register();
+            $$->code = $1->code;
+            $$->code = concat_instruction_list($$->code, generate_if_code($1->local, nop_after->label, nop_before->label));
+            add_instruction(nop_before, $$->code);
+            $$->code = concat_instruction_list($$->code, generate_move_code($1->local, $$->local));
+            $$->code = concat_instruction_list($$->code, generate_jumpi_code(nop_end->label));
+            add_instruction(nop_after, $$->code);
+            $$->code = concat_instruction_list($$->code, $3->code);
+            $$->code = concat_instruction_list($$->code, generate_move_code($3->local, $$->local));
+            add_instruction(nop_end, $$->code);
+
+        }
+        | expression TK_OC_OR expression {
+            $$ = create_node(table_stack, $2, BOOL, 0);
+            add_child($$, $1);
+            add_child($$, $3);
+
+            ILOC_INSTRUCTION* nop_before = create_instruction(NOP, NULL, NULL);
+            nop_before->label = generate_label();
+
+            ILOC_INSTRUCTION* nop_after = create_instruction(NOP, NULL, NULL);
+            nop_after->label = generate_label();
+
+            ILOC_INSTRUCTION* nop_end = create_instruction(NOP, NULL, NULL);
+            nop_end->label = generate_label();
+
+            $$->local = generate_register();
+            $$->code = $1->code;
+            $$->code = concat_instruction_list($$->code, generate_if_code($1->local, nop_before->label, nop_after->label));
+            add_instruction(nop_before, $$->code);
+            $$->code = concat_instruction_list($$->code, generate_move_code($1->local, $$->local));
+            $$->code = concat_instruction_list($$->code, generate_jumpi_code(nop_end->label));
+            add_instruction(nop_after, $$->code);
+            $$->code = concat_instruction_list($$->code, $3->code);
+            $$->code = concat_instruction_list($$->code, generate_move_code($3->local, $$->local));
+            add_instruction(nop_end, $$->code);
+        }
 
 ternary_expression: expression_term '?' expression ':' expression { $$ = create_node_with_type(table_stack, TERNARY_EXPRESSION, $2, NONE, 0);
                                                                     add_child($$, $1);

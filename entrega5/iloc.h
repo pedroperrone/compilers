@@ -22,6 +22,7 @@ typedef enum iloc_operator
     LOADI,
     LOADAI,
     STOREAI,
+    I2I,
 
     HALT,
     NOP
@@ -74,3 +75,4 @@ void print_arrow(ILOC_OPERATOR op);
 void print_label(char *label);
 ILOC_INSTRUCTION_LIST* generate_labeled_nop_code(char *label);
 ILOC_INSTRUCTION_LIST* generate_halt_code();
+ILOC_INSTRUCTION_LIST *generate_move_code(char *source, char *target);

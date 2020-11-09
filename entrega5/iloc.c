@@ -149,6 +149,9 @@ void print_operator(ILOC_OPERATOR op) {
         case HALT:
             printf("halt");
             break;
+        case I2I:
+            printf("i2i");
+            break;
         case NOP:
             printf("nop");
             break;
@@ -298,5 +301,16 @@ ILOC_INSTRUCTION_LIST* generate_halt_code() {
     ILOC_INSTRUCTION *instruction;
 
     instruction = create_instruction(HALT, NULL, NULL);
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_move_code(char *source, char *target) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+
+    source_operands = create_operand_list(source);
+    target_operands = create_operand_list(target);
+
+    instruction = create_instruction(I2I, source_operands, target_operands);
     return create_instruction_list(instruction);
 }
