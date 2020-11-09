@@ -84,6 +84,7 @@ void print_arrow(ILOC_OPERATOR op) {
     case CMP_GT:
     case CMP_NE:
     case CBR:
+    case JUMPI:
         printf(" ->");
         break;
     default:
@@ -132,6 +133,9 @@ void print_operator(ILOC_OPERATOR op) {
             break;
         case CBR:
             printf("cbr");
+            break;
+        case JUMPI:
+            printf("jumpI");
             break;
         case LOADI:
             printf("loadI");
@@ -258,5 +262,17 @@ ILOC_INSTRUCTION_LIST* generate_if_code(char *condition_register, char *on_true_
     add_operand(on_false_label, target_operands);
 
     instruction = create_instruction(CBR, source_operands, target_operands);
+    return create_instruction_list(instruction);
+}
+
+ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label) {
+    ILOC_OPERAND_LIST *source_operands, *target_operands;
+    ILOC_INSTRUCTION *instruction;
+
+    source_operands = NULL;
+
+    target_operands = create_operand_list(label);
+
+    instruction = create_instruction(JUMPI, source_operands, target_operands);
     return create_instruction_list(instruction);
 }

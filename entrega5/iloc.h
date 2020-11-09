@@ -17,6 +17,7 @@ typedef enum iloc_operator
     CMP_NE,
 
     CBR,
+    JUMPI,
 
     LOADI,
     LOADAI,
@@ -65,5 +66,6 @@ ILOC_INSTRUCTION_LIST* generate_binary_expression_code(ILOC_OPERATOR operation, 
 ILOC_INSTRUCTION_LIST *generate_attribution_code(char *source, char *base_register, int mem_offset);
 ILOC_INSTRUCTION_LIST *generate_load_code(char *base_register, int mem_offset, char *target);
 ILOC_INSTRUCTION_LIST* generate_if_code(char *condition_register, char *on_true_label, char *on_false_label);
+ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label);
 void print_arrow(ILOC_OPERATOR op);
 void print_label(char *label);
