@@ -72,6 +72,9 @@ void libera(void *root)
     }
     free(node->children);
     free_lexeme(node->lexeme);
+    if(node->local != NULL) {
+        free(node->local);
+    }
     free(node);
 }
 

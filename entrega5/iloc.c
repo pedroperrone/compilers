@@ -48,6 +48,7 @@ ILOC_OPERAND_LIST *create_operand_list(char *operand) {
 ILOC_OPERAND_LIST *add_operand(char *operand, ILOC_OPERAND_LIST *operand_list) {
     ILOC_OPERAND_LIST *new_operand_list = malloc(sizeof(ILOC_OPERAND_LIST));
     new_operand_list->operand = strdup(operand);
+    new_operand_list->next = NULL;
 
     if (operand_list == NULL) return new_operand_list;
 
