@@ -69,3 +69,4 @@ ILOC_INSTRUCTION_LIST* generate_if_code(char *condition_register, char *on_true_
 ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label);
 void print_arrow(ILOC_OPERATOR op);
 void print_label(char *label);
+ILOC_INSTRUCTION_LIST* generate_labeled_nop_code(char *label);

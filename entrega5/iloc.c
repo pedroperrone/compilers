@@ -276,3 +276,12 @@ ILOC_INSTRUCTION_LIST* generate_jumpi_code(char *label) {
     instruction = create_instruction(JUMPI, source_operands, target_operands);
     return create_instruction_list(instruction);
 }
+
+
+ILOC_INSTRUCTION_LIST* generate_labeled_nop_code(char *label) {
+    ILOC_INSTRUCTION *instruction;
+
+    instruction = create_instruction(NOP, NULL, NULL);
+    instruction->label = label;
+    return create_instruction_list(instruction);
+}

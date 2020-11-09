@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "lexeme.h"
 #include "tree.h"
 #include "table.h"
@@ -34,6 +35,7 @@ FUNCTION_CALL_CONTEXT *function_call_context = NULL;
 LITERAL_TYPE current_declaration_type = NONE;
 LITERAL_TYPE current_function_type = NONE;
 ILOC_INSTRUCTION_LIST *instruction_list = NULL;
+char *main_label = NULL;
 %}
 
 %verbose
@@ -269,13 +271,19 @@ global_identifier_list: TK_IDENTIFICADOR optional_vector_definition_brackets {
 function: function_header function_body {
                 $$ = $1;
                 add_child($$, $2);
-                $$->code = $2->code;
+                $$->code = concat_instruction_list($1->code, $2->code);
         }
 
 function_header: optional_static type TK_IDENTIFICADOR '(' parameter_list ')' {
         add_entry(table_stack, $3, FUNC, $2, $5, -1);
         $$ = create_node(table_stack, $3, $2, 0);
         current_function_type = $2;
+        char *label = generate_label();
+        $$->local = label;
+        $$->code = generate_labeled_nop_code(label);
+        if (strcmp($3->raw_value, "main") == 0) {
+            main_label = label;
+        }
 }
 
 parameter_list: optional_const type TK_IDENTIFICADOR parameter_list_tail { $$ = create_argument($4, $2); free_lexeme($3); }
